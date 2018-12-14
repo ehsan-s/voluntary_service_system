@@ -1,4 +1,4 @@
-# voluntary-service-system
+# voluntary_service_system
 project created without admin
 
 ## virtualenv
