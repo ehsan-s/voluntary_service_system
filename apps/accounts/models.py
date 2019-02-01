@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
 
 class UserProfile(models.Model):
@@ -18,6 +19,13 @@ class OrganizationProfile(models.Model):
 
 class BenefactorProfile(models.Model):
     profile = models.OneToOneField(UserProfile)
-    
+    skills = models.ManyToManyField(BenefactorSkill)
 
 
+class SkillCategory(models.Model):
+    category = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill category‌'))
+
+
+class BenefactorSkill(models.Model):
+    category = models.ForeignKey(SkillCategory)
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill name‌'))
