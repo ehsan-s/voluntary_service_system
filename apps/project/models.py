@@ -5,27 +5,32 @@ from apps.accounts.models import *
 
 
 class Project(models.Model):
-    user = models.OneToOneField(User, related_name='user_profile')
-    age = models.IntegerField(null=True, blank=True, verbose_name=_('Age‌'))
-    phone_number = models.CharField(max_length=11, null=True, blank=True, verbose_name=_('Mobile number‌'))
-    tel_number = models.CharField(max_length=20, null=True, blank=True, verbose_name=_('Telephone number‌'))
-    address = models.CharField(max_length=200, null=True, blank=True, verbose_name=_('Address‌'))
-    activities = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Activities‌'))
-
-
-class FinancialProject(models.Model):
     organization = models.ForeignKey(OrganizationProfile)
+    STATUS_CHOICES = (
+        ('in_progress', 'in progress'),
+        ('done', 'done'),
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress', verbose_name=_('status‌'))
+    location = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
+
+
+class FinancialProject(Project):
+    benefactors = models.ManyToManyField(BenefactorProfile)
     name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('financial project name‌'))
     deadline = models.DateTimeField(null=True, blank=True)
+    money_needed = models.IntegerField(null=False, blank=False, verbose_name=_('money needed‌'))
+    money_donated = models.IntegerField(null=False, blank=False, verbose_name=_('money donated‌'))
 
 
-class NonFinancialProject(models.Model):
-    need = models.ForeignKey(BenefactorSkill)
+class NonFinancialProject(Project):
+    benefactor = models.ForeignKey(BenefactorProfile, null=True)
+    need = models.ForeignKey(BenefactorSkill, null=False)
     GENDER_CHOICES = (
-        ('MALE', 'male'),
-        ('FEMALE', 'female'),
-        ('NOT_IMPORTANT', 'not important'),
+        ('male', 'male'),
+        ('female', 'female'),
+        ('not_important', 'not important'),
     )
-    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='NOT_IMPORTANT', verbose_name=_('gender‌'))
-    city = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('city'))
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='not_important', verbose_name=_('gender‌'))
     age = models.IntegerField(null=True, blank=True, verbose_name=_('Age‌'))
+
+
