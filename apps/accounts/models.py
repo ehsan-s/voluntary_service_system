@@ -20,3 +20,13 @@ class BenefactorProfile(models.Model):
     profile = models.OneToOneField(UserProfile)
     age = models.IntegerField(null=False, blank=False, verbose_name=_('Age‌'))
     desires = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Desires'))
+    skills = models.ManyToManyField(BenefactorSkill)
+
+
+class SkillCategory(models.Model):
+    category = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill category‌'))
+
+
+class BenefactorSkill(models.Model):
+    category = models.ForeignKey(SkillCategory)
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill name‌'))
