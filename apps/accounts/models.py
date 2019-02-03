@@ -3,6 +3,15 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 
+class SkillCategory(models.Model):
+    category = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill category‌'))
+
+
+class BenefactorSkill(models.Model):
+    category = models.ForeignKey(SkillCategory)
+    name = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill name‌'))
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     phone_number = models.CharField(max_length=20, null=False, blank=False, verbose_name=_('Mobile number‌'))
@@ -23,10 +32,3 @@ class BenefactorProfile(models.Model):
     skills = models.ManyToManyField(BenefactorSkill)
 
 
-class SkillCategory(models.Model):
-    category = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill category‌'))
-
-
-class BenefactorSkill(models.Model):
-    category = models.ForeignKey(SkillCategory)
-    name = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill name‌'))

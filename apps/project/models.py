@@ -18,8 +18,8 @@ class FinancialProject(Project):
     benefactors = models.ManyToManyField(BenefactorProfile)
     name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('financial project name‌'))
     deadline = models.DateTimeField(null=True, blank=True)
-    money_needed = models.IntegerField(null=False, blank=False, verbose_name=_('money needed‌'))
-    money_donated = models.IntegerField(null=False, blank=False, verbose_name=_('money donated‌'))
+    money_needed = models.IntegerField(null=False, verbose_name=_('money needed‌'))
+    money_donated = models.IntegerField(null=True, verbose_name=_('money donated‌'))
 
 
 class NonFinancialProject(Project):
