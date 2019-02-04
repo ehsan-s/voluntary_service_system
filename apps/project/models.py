@@ -2,15 +2,19 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from apps.accounts.models import *
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 class Project(models.Model):
     organization = models.ForeignKey(OrganizationProfile)
     STATUS_CHOICES = (
+        ('not_started', 'not started'),
         ('in_progress', 'in progress'),
         ('done', 'done'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress', verbose_name=_('status‌'))
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started', verbose_name=_('status‌'))
     location = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
 
 
@@ -32,5 +36,16 @@ class NonFinancialProject(Project):
     )
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='not_important', verbose_name=_('gender‌'))
     age = models.IntegerField(null=True, blank=True, verbose_name=_('Age‌'))
+
+
+class Feedback(models.Model):
+    rate = models.IntegerField(default=5, validators=[MaxValueValidator(5), MinValueValidator(1)])
+    feedback = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('feedback'))
+    FEEDER_CHOICES = (
+        ('benefactor', 'benefactor'),
+        ('organization', 'organization'),
+    )
+    feeder = models.CharField(max_length=20, choices=FEEDER_CHOICES, default='organization', verbose_name=_('feeder‌'))
+    project = models.ForeignKey(NonFinancialProject)
 
 
