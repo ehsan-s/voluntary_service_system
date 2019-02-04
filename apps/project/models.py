@@ -49,3 +49,19 @@ class Feedback(models.Model):
     project = models.ForeignKey(NonFinancialProject)
 
 
+class Request(models.Model):
+    project = models.ForeignKey(NonFinancialProject)
+    REQUESTER_CHOICES = (
+        ('benefactor', 'benefactor'),
+        ('organization', 'organization'),
+    )
+    requester = models.CharField(max_length=20, choices=REQUESTER_CHOICES, default='benefactor', verbose_name=_('requester‌'))
+    benefactor = models.ForeignKey(BenefactorProfile)
+    request_desc = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('request description‌'))
+    answer_desc = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('answer description‌'))
+    STATUS_CHOICES = (
+        ('in_progress', 'in_progress'),
+        ('accepted', 'accepted'),
+        ('rejected', 'rejected'),
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress', verbose_name=_('status‌'))

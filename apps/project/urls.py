@@ -7,4 +7,6 @@ urlpatterns = [
     url(r'^benefactor/(?P<benefactor_name>.+)/$', views.benefactor_project, name='benefactor_project'),
     url(r'^feedbacks/organization/(?P<org_name>.+)/$', views.org_feedback, name='org_feedback'),
     url(r'^feedbacks/benefactor/(?P<benefactor_name>.+)/$', views.benefactor_feedback, name='benefactor_feedback'),
+    url(r'^requests/organization/(?P<org_name>.+)/$', views.org_request, name='org_request'),
+    url(r'^requests/benefactor/(?P<benefactor_name>.+)/$', views.benefactor_request, name='benefactor_request'),
 ]

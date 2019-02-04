@@ -54,21 +54,19 @@ def org_feedback(request, org_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'receive')
         feedbacks_list = None
-        if type == 'receive':
+        feeder = None
+        if type == 'send':
+            feeder = 'organization'
+        elif type == 'receive':
+            feeder = 'benefactor'
+        if feeder is not None:
             feedbacks_list = list(Feedback.objects\
-                .filter(project__organization__profile__user__username=org_name, feeder='benefactor')
+                .filter(project__organization__profile__user__username=org_name, feeder=feeder)
                                   .annotate(category=F('project__need__category__category'),
                                             name=F('project__need__name'),
                                             username=F('project__benefactor__profile__user__username'))
                                   .values('category', 'name', 'rate', 'feedback', 'username'))
-        elif type == 'send':
-            feedbacks_list = list(Feedback.objects\
-                                  .filter(project__organization__profile__user__username=org_name, feeder='organization')
-                                  .annotate(category=F('project__need__category__category'),
-                                            name=F('project__need__name'),
-                                            username=F('project__benefactor__profile__user__username'))
-                                  .values('category', 'name', 'rate', 'feedback', 'username'))
-        return JsonResponse({'status': '0', 'projects': feedbacks_list})
+        return JsonResponse({'status': '0', 'feedbacks': feedbacks_list})
     else:
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
 
@@ -77,20 +75,60 @@ def benefactor_feedback(request, benefactor_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'receive')
         feedbacks_list = None
+        feeder = None
         if type == 'receive':
-            feedbacks_list = list(Feedback.objects\
-                .filter(project__benefactor__profile__user__username=benefactor_name, feeder='organization')
-                                  .annotate(category=F('project__need__category__category'),
-                                            name=F('project__need__name'),
-                                            username=F('project__organization__profile__user__username'))
-                                  .values('category', 'name', 'rate', 'feedback', 'username'))
+            feeder = 'organization'
         elif type == 'send':
+            feeder = 'benefactor'
+        if feeder is not None:
             feedbacks_list = list(Feedback.objects\
-                                  .filter(project__benefactor__profile__user__username=benefactor_name, feeder='benefactor')
+                .filter(project__benefactor__profile__user__username=benefactor_name, feeder=feeder)
                                   .annotate(category=F('project__need__category__category'),
                                             name=F('project__need__name'),
                                             username=F('project__organization__profile__user__username'))
                                   .values('category', 'name', 'rate', 'feedback', 'username'))
-        return JsonResponse({'status': '0', 'projects': feedbacks_list})
+        return JsonResponse({'status': '0', 'feedbacks': feedbacks_list})
+    else:
+        return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
+
+
+def org_request(request, org_name):
+    if request.method == 'GET':
+        type = request.GET.get('type', 'receive')
+        requests_list = None
+        requester = None
+        if type == 'send':
+            requester = 'organization'
+        elif type == 'receive':
+            requester = 'benefactor'
+        if requester is not None:
+            requests_list = list(Request.objects\
+                .filter(project__organization__profile__user__username=org_name, requester=requester)
+                                  .annotate(category=F('project__need__category__category'),
+                                            name=F('project__need__name'), location=F('project__location'),
+                                            username=F('benefactor__profile__user__username'))
+                                  .values('username', 'category', 'name', 'location', 'request_desc', 'answer_desc', 'status'))
+        return JsonResponse({'status': '0', 'requests': requests_list})
+    else:
+        return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
+
+
+def benefactor_request(request, benefactor_name):
+    if request.method == 'GET':
+        type = request.GET.get('type', 'receive')
+        requests_list = None
+        requester = None
+        if type == 'receive':
+            requester = 'organization'
+        elif type == 'send':
+            requester = 'benefactor'
+        if requester is not None:
+            requests_list = list(Request.objects\
+                .filter(benefactor__profile__user__username=benefactor_name, requester=requester)
+                                  .annotate(category=F('project__need__category__category'),
+                                            name=F('project__need__name'), location=F('project__location'),
+                                            username=F('project__organization__profile__user__username'))
+                                  .values('username', 'category', 'name', 'location', 'request_desc', 'answer_desc', 'status'))
+        return JsonResponse({'status': '0', 'requests': requests_list})
     else:
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
