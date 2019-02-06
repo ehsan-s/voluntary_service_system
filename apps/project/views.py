@@ -3,9 +3,11 @@ from .models import *
 from apps.accounts.models import BenefactorProfile, OrganizationProfile, UserProfile
 from django.http import JsonResponse
 from django.db.models import F
+from django.views.decorators.csrf import csrf_exempt
 
 
 #  http://127.0.0.1:8000/projects/organization/org/?type=non_financial&status=in_progress
+@csrf_exempt
 def org_project(request, org_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'financial')
@@ -26,6 +28,7 @@ def org_project(request, org_name):
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
 
 
+@csrf_exempt
 def benefactor_project(request, benefactor_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'financial')
@@ -50,6 +53,7 @@ def benefactor_project(request, benefactor_name):
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
 
 
+@csrf_exempt
 def org_feedback(request, org_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'receive')
@@ -71,6 +75,7 @@ def org_feedback(request, org_name):
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
 
 
+@csrf_exempt
 def benefactor_feedback(request, benefactor_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'receive')
@@ -92,6 +97,7 @@ def benefactor_feedback(request, benefactor_name):
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
 
 
+@csrf_exempt
 def org_request(request, org_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'receive')
@@ -113,6 +119,7 @@ def org_request(request, org_name):
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
 
 
+@csrf_exempt
 def benefactor_request(request, benefactor_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'receive')

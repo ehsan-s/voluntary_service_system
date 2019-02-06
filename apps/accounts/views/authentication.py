@@ -4,6 +4,7 @@ from apps.accounts.forms import BenefactorSignUpForm, UserProfileSignupForm, Ben
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 
+
 @csrf_exempt
 def register_benefactor(request):
     if request.method == "POST":
