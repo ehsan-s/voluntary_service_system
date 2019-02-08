@@ -8,6 +8,7 @@ from django.http import JsonResponse
 import json
 
 
+
 @csrf_exempt
 def register_benefactor(request):
     if request.method == "POST":
