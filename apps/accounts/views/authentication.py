@@ -1,16 +1,44 @@
 from django.views.decorators.csrf import csrf_exempt
-from apps.accounts.forms import BenefactorSignUpForm, UserProfileSignupForm, BenefactorUserSignupForm, \
-    OrgUserSignupForm, OrgSignUpForm
-from django.contrib.auth import authenticate, login
+from apps.accounts.forms import (BenefactorSignUpForm, UserProfileSignupForm, BenefactorUserSignupForm,
+                                 OrgUserSignupForm, OrgSignUpForm)
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.forms import AuthenticationForm
+from apps.accounts.models import SkillCategory, BenefactorSkill
 from django.http import JsonResponse
+import json
+
 
 @csrf_exempt
 def register_benefactor(request):
     if request.method == "POST":
-        print(request.POST)
-        user_form = BenefactorUserSignupForm(request.POST)
-        user_profile_form = UserProfileSignupForm(request.POST)
-        benefactor_form = BenefactorSignUpForm(request.POST)
+        p = json.loads(request.body)
+        user_form = BenefactorUserSignupForm(p)
+        user_profile_form = UserProfileSignupForm(p)
+        benefactor_form = BenefactorSignUpForm(p)
+
+        skills = p['skills']
+        benefactor_skills = []
+        for skill in skills:
+            try:
+                category = skill['category']
+            except KeyError:
+                return JsonResponse({'status': '-1', 'message': {'category': ['category is required']}})
+            try:
+                name = skill['name']
+            except KeyError:
+                return JsonResponse({'status': '-1', 'message': {'name': ['name is required']}})
+            try:
+                skill_category = SkillCategory.objects.get(category=category)
+            except SkillCategory.DoesNotExist:
+                skill_category = SkillCategory(category=category)
+                skill_category.save()
+            try:
+                benefactor_skill = BenefactorSkill.objects.get(name=name)
+            except BenefactorSkill.DoesNotExist:
+                benefactor_skill = BenefactorSkill(name=name)
+                benefactor_skill.category = skill_category
+                benefactor_skill.save()
+            benefactor_skills.append(benefactor_skill)
         if user_form.is_valid():
             if user_profile_form.is_valid():
                 if benefactor_form.is_valid():
@@ -18,10 +46,12 @@ def register_benefactor(request):
                     user_profile = user_profile_form.save(commit=False)
                     user_profile.user = user
                     user_profile.save()
-                    benefactor_form = benefactor_form.save(commit=False)
-                    benefactor_form.profile = user_profile
-                    benefactor_form.save()
-                    return JsonResponse({'status': '0'})
+                    benefactor = benefactor_form.save(commit=False)
+                    benefactor.profile = user_profile
+                    benefactor.save()
+                    for skill in benefactor_skills:
+                        benefactor.skills.add(skill)
+                    return JsonResponse({'status': '0', 'message': 'Benefactor registered successfully'})
                 else:
                     return JsonResponse({'status': '-1', 'message': dict(benefactor_form.errors.items())})
             else:
@@ -34,10 +64,10 @@ def register_benefactor(request):
 @csrf_exempt
 def register_organization(request):
     if request.method == "POST":
-        print(request.POST)
-        user_form = OrgUserSignupForm(request.POST)
-        user_profile_form = UserProfileSignupForm(request.POST)
-        org_form = OrgSignUpForm(request.POST)
+        p = json.loads(request.body)
+        user_form = OrgUserSignupForm(p)
+        user_profile_form = UserProfileSignupForm(p)
+        org_form = OrgSignUpForm(p)
         if user_form.is_valid():
             if user_profile_form.is_valid():
                 if org_form.is_valid():
@@ -48,7 +78,7 @@ def register_organization(request):
                     benefactor_form = org_form.save(commit=False)
                     benefactor_form.profile = user_profile
                     benefactor_form.save()
-                    return JsonResponse({'status': '0'})
+                    return JsonResponse({'status': '0', 'message': 'Organization registered successfully'})
                 else:
                     return JsonResponse({'status': '-1', 'message': dict(org_form.errors.items())})
             else:
@@ -59,19 +89,15 @@ def register_organization(request):
 
 
 @csrf_exempt
-def all_login(request):
+def login(request):
     if request.method == "POST":
-        print(request.POST)
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(username=username, password=password)
-        if user:
-            if user.is_active:
-                login(request, user)
-                return JsonResponse({'status': '0', 'message': 'Successful Login'})
-
-            return JsonResponse({'status': '-1', 'message': 'User is not active'})
-
-        return JsonResponse({'status': '-1', 'message': 'User not found'})
-
-    return JsonResponse({'status': '-1', 'message': 'just POST request'})
+        p = json.loads(request.body)
+        login_form = AuthenticationForm(data=p)
+        if login_form.is_valid():
+            user = login_form.get_user()
+            auth_login(request, user)
+            return JsonResponse({'status': '0', 'message': 'Successful Login'})
+        else:
+            return JsonResponse({'status': '-1', 'message': dict(login_form.errors.items())})
+    else:
+        return JsonResponse({'status': '-1', 'message': 'just POST request'})
