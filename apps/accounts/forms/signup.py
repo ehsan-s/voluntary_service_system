@@ -23,17 +23,6 @@ class BenefactorUserSignupForm(UserCreationForm):
             raise ValidationError('Email is registered')
         return email
 
-    def save(self, commit=True):
-        user = super(BenefactorUserSignupForm, self).save(commit=False)
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
-        user.email = self.cleaned_data['email']
-
-        if commit:
-            user.save()
-
-        return user
-
 
 class UserProfileSignupForm(forms.ModelForm):
     phone_regex = RegexValidator(regex=r'^\d{8,15}$', message=_("Please enter your phone number correctly!"))
@@ -69,18 +58,8 @@ class OrgUserSignupForm(UserCreationForm):
             raise ValidationError('Email is registered')
         return email
 
-    def save(self, commit=True):
-        user = super(OrgUserSignupForm, self).save(commit=False)
-        user.email = self.cleaned_data['email']
-
-        if commit:
-            user.save()
-
-        return user
-
 
 class OrgSignUpForm(forms.ModelForm):
     class Meta:
         model = OrganizationProfile
         fields = ('name', )
-
