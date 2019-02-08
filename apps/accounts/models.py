@@ -24,6 +24,13 @@ class OrganizationProfile(models.Model):
     profile = models.OneToOneField(UserProfile)
     name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('Name‌'))
 
+    def as_json(self):
+        return dict(username=self.profile.user.username,
+                    email=self.profile.user.email,
+                    phone_number=self.profile.phone_number, tel_number=self.profile.tel_number,
+                    address=self.profile.address, activities=self.profile.activities,
+                    name=self.name)
+
 
 class BenefactorProfile(models.Model):
     profile = models.OneToOneField(UserProfile)
@@ -31,4 +38,17 @@ class BenefactorProfile(models.Model):
     desires = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Desires'))
     skills = models.ManyToManyField(BenefactorSkill)
 
+    def as_json(self):
+        return dict(username=self.profile.user.username,
+                    first_name=self.profile.user.first_name,
+                    last_name=self.profile.user.last_name,
+                    email=self.profile.user.email,
+                    phone_number=self.profile.phone_number, tel_number=self.profile.tel_number,
+                    address=self.profile.address, activities=self.profile.activities,
+                    name=self.age, desires=self.desires, skills=self.get_all_skills())
 
+    def get_all_skills(self):
+        all_skills = []
+        for skill in self.skills.all():
+            all_skills.append(dict(category=skill.category.category, name=skill.name))
+        return all_skills
