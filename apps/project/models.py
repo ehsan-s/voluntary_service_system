@@ -15,12 +15,11 @@ class Project(models.Model):
         ('done', 'done'),
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started', verbose_name=_('status‌'))
-    location = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
+    name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('project name‌'))
 
 
 class FinancialProject(Project):
     benefactors = models.ManyToManyField(BenefactorProfile)
-    name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('financial project name‌'))
     deadline = models.DateTimeField(null=True, blank=True)
     money_needed = models.IntegerField(null=False, verbose_name=_('money needed‌'))
     money_donated = models.IntegerField(null=True, verbose_name=_('money donated‌'))
@@ -36,6 +35,7 @@ class NonFinancialProject(Project):
     )
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='not_important', verbose_name=_('gender‌'))
     age = models.IntegerField(null=True, blank=True, verbose_name=_('Age‌'))
+    location = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
 
 
 class Feedback(models.Model):
