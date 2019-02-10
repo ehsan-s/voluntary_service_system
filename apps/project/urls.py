@@ -11,5 +11,7 @@ urlpatterns = [
     url(r'^feedbacks/organization/(?P<org_name>.+)/$', views.org_feedback, name='org_feedback'),
     url(r'^feedbacks/benefactor/(?P<benefactor_name>.+)/$', views.benefactor_feedback, name='benefactor_feedback'),
     url(r'^requests/organization/(?P<org_name>.+)/$', views.org_request, name='org_request'),
-    url(r'^requests/benefactor/(?P<benefactor_name>.+)/$', views.benefactor_request, name='benefactor_request')
+    url(r'^requests/benefactor/(?P<benefactor_name>.+)/$', views.benefactor_request, name='benefactor_request'),
+    url(r'^requests/organization/(?P<org_name>.+)/(?P<project_id>.+)/$', views.org_participation_request, name='org_request'),
+    url(r'^requests/benefactor/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.benefactor_participation_request, name='benefactor_request')
 ]
