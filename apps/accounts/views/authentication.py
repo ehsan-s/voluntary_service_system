@@ -3,7 +3,7 @@ from apps.accounts.forms import (BenefactorSignUpForm, UserProfileSignupForm, Be
                                  OrgUserSignupForm, OrgSignUpForm)
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
-from apps.accounts.models import SkillCategory, BenefactorSkill
+from apps.accounts.models import SkillCategory, BenefactorSkill, BenefactorProfile
 from django.http import JsonResponse
 import json
 
@@ -98,8 +98,10 @@ def login(request):
         if login_form.is_valid():
             user = login_form.get_user()
             auth_login(request, user)
-            print(user, p)
-            return JsonResponse({'status': '0', 'message': 'Successful Login'})
+            if BenefactorProfile.objects.filter(profile__user__username=user.username).exists():
+                return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'benefactor'})
+            else:
+                return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'organization'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(login_form.errors.items())})
     else:
