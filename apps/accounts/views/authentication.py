@@ -18,6 +18,7 @@ def register_benefactor(request):
         benefactor_form = BenefactorSignUpForm(p)
 
         skills = p['skills']
+        skills = json.loads(skills)
         benefactor_skills = []
         for skill in skills:
             try:
@@ -97,6 +98,7 @@ def login(request):
         if login_form.is_valid():
             user = login_form.get_user()
             auth_login(request, user)
+            print(user, p)
             return JsonResponse({'status': '0', 'message': 'Successful Login'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(login_form.errors.items())})
