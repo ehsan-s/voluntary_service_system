@@ -1,6 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from apps.accounts.forms import (BenefactorSignUpForm, UserProfileSignupForm, BenefactorUserSignupForm,
                                  OrgUserSignupForm, OrgSignUpForm)
+from apps.accounts.models import UserProfile
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from apps.accounts.models import SkillCategory, BenefactorSkill, BenefactorProfile
@@ -97,7 +98,8 @@ def login(request):
         if login_form.is_valid():
             user = login_form.get_user()
 
-            if user.status == 'P':
+            user_profile = UserProfile.objects.get(user__username=user.username)
+            if user_profile.status == 'P':
                 return JsonResponse({'status': '-1', 'message': 'User not verified'})
 
             auth_login(request, user)

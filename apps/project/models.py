@@ -50,12 +50,6 @@ class Feedback(models.Model):
 
     feedback = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('feedback'))
 
-    STATUS_CHOICES = (
-        ('P', 'pending'),
-        ('A', 'approved'),
-    )
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P', verbose_name=_('User status'))
-
     def as_json(self):
         return dict(id=self.id, project=self.project, rate=self.rate, feedback=self.feedback)
 
