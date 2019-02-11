@@ -24,6 +24,14 @@ class FinancialProject(Project):
     money_needed = models.IntegerField(null=False, verbose_name=_('money needed‌'))
     money_donated = models.IntegerField(null=True, verbose_name=_('money donated‌'))
 
+    def as_json(self):
+        benefactors_list = []
+        for ben in self.benefactors.all():
+            benefactors_list.append(ben.as_json())
+        return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
+                    id=self.id, benefactors=benefactors_list,
+                    money_needed=self.money_needed, money_donated=self.money_donated)
+
 
 class NonFinancialProject(Project):
     benefactor = models.ForeignKey(BenefactorProfile, null=True)
@@ -36,6 +44,12 @@ class NonFinancialProject(Project):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='not_important', verbose_name=_('gender‌'))
     age = models.IntegerField(null=True, blank=True, verbose_name=_('Age‌'))
     location = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
+
+    def as_json(self):
+        return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
+                    id=self.id, benefactor=self.benefactor.as_json(),
+                    need_=dict(name=self.need.name, category=self.need.category),
+                    gender=self.gender, age=self.age, location=self.location)
 
 
 class Feedback(models.Model):

@@ -62,19 +62,8 @@ def remove_user(request, user_name):
 
 
 @csrf_exempt
-def approve_feedback(request, feedback_id):
-    if request.method == 'POST':
-        try:
-            feedback = Feedback.objects.get(id=feedback_id)
-        except Feedback.DoesNotExist:
-            return JsonResponse({'status': '-1', 'error': 'feedback does not exist.'})
-
-        feedback.status = 'A'
-        feedback.save()
-        return JsonResponse({'status': '0', 'message': 'feedback has been successfully verified.'})
-
-    else:
-        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+def edit_feedback(request, feedback_id):
+    pass
 
 
 @csrf_exempt

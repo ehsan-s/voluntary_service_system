@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^organization/public_profile/(?P<username>.+)/$', views.benefactor_views_org, name='view_org_profile'),
     url(r'^benefactor/public_profile/(?P<username>.+)/$', views.org_views_benefactor, name='view_benefactor_profile'),
 
-    url(r'^organization/profile/(?P<username>.+)/$', views.edit_org, name='edit_org_profile'),
-    url(r'^benefactor/profile/(?P<username>.+)/$', views.edit_benefactor, name='edit_benefactor_profile'),
+    url(r'^organization/edit_profile/(?P<username>.+)/$', views.edit_org, name='edit_org_profile'),
+    url(r'^benefactor/edit_profile/(?P<username>.+)/$', views.edit_benefactor, name='edit_benefactor_profile'),
     url(r'^change_password/(?P<username>.+)/$', views.edit_password, name='edit_password')
 ]

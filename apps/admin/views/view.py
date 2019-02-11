@@ -29,6 +29,85 @@ def view_all_organizations(request):
 
 
 @csrf_exempt
+def view_all_fprojects(request):
+    if request.method == "GET":
+        data = []
+        for project in FinancialProject.objects.all():
+            data.append(project.as_json())
+        return JsonResponse({'status': '0', 'list': data})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def view_benefactor_fprojects(request, username):
+    if request.method == "GET":
+        benefactor = BenefactorProfile.objects.get(profile__user__username=username)
+        data = []
+        for project in FinancialProject.objects.all():
+            if benefactor in project.benefactors.all():
+                data.append(project.as_json())
+        return JsonResponse({'status': '0', 'list': data})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def view_organization_fprojects(request, username):
+    if request.method == "GET":
+        orgnanization = OrganizationProfile.objects.get(profile__user__username=username)
+        data = []
+        for project in FinancialProject.objects.all():
+            if orgnanization.id == project.organization.id:
+                data.append(project.as_json())
+        return JsonResponse({'status': '0', 'list': data})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+@csrf_exempt
+def view_all_nprojects(request):
+    if request.method == "GET":
+        data = []
+        for project in NonFinancialProject.objects.all():
+            data.append(project.as_json())
+        return JsonResponse({'status': '0', 'list': data})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def view_benefactor_nprojects(request, username):
+    if request.method == "GET":
+        benefactor = BenefactorProfile.objects.get(profile__user__username=username)
+        data = []
+        for project in NonFinancialProject.objects.all():
+            if benefactor.id == project.benefactor.id:
+                data.append(project.as_json())
+        return JsonResponse({'status': '0', 'list': data})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def view_organization_nprojects(request, username):
+    if request.method == "GET":
+        orgnanization = OrganizationProfile.objects.get(profile__user__username=username)
+        data = []
+        for project in NonFinancialProject.objects.all():
+            if orgnanization.id == project.organization.id:
+                data.append(project.as_json())
+        return JsonResponse({'status': '0', 'list': data})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
 def view_skills(request):
     if request.method == "GET":
         data = []
