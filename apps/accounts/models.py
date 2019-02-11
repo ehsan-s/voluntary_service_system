@@ -45,7 +45,7 @@ class BenefactorProfile(models.Model):
                     email=self.profile.user.email,
                     phone_number=self.profile.phone_number, tel_number=self.profile.tel_number,
                     address=self.profile.address, activities=self.profile.activities,
-                    name=self.age, desires=self.desires, skills=self.get_all_skills())
+                    age=self.age, desires=self.desires, skills=self.get_all_skills())
 
     def get_all_skills(self):
         all_skills = []
