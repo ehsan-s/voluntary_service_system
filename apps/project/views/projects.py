@@ -88,9 +88,9 @@ def benefactor_project(request, benefactor_name):
     if request.method == 'GET':
         type = request.GET.get('type', 'financial')
         status = request.GET.get('status', 'done')
-        print(benefactor_name, type, status)
-        print(FinancialProject.objects.all()[0].benefactors.all())
-        print(NonFinancialProject.objects.all().values())
+        # print(benefactor_name, type, status)
+        # print(FinancialProject.objects.all()[0].benefactors.all())
+        # print(NonFinancialProject.objects.all().values())
         projects_list = None
         if type == 'financial':
             projects_list = list(FinancialProject.objects\

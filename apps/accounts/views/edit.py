@@ -10,8 +10,9 @@ import json
 @csrf_exempt
 def edit_password(request, username):
     if request.method == "POST":
+        p = json.loads(request.body)
         user = User.objects.get(username=username)
-        user_form = PasswordChangeForm(data=request.POST, user=user)
+        user_form = PasswordChangeForm(data=p, user=user)
         if user_form.is_valid():
             user_form.save()
             return JsonResponse({'status': '0', 'message': 'Successful changing password'})
@@ -46,6 +47,7 @@ def edit_benefactor(request, username):
         user_profile_form = UserProfileEditForm(p, instance=user_profile)
         benefactor_profile_form = BenefactorProfileEditForm(p, instance=benefactor_profile)
         skills = p['skills']
+        skills = json.loads(skills)
         benefactor_skills = []
         for skill in skills:
             try:
