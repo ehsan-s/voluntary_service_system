@@ -26,7 +26,7 @@ class UserProfile(models.Model):
         ('P', 'pending'),
         ('V', 'verified'),
     )
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P', verbose_name=_('User status'))
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='V', verbose_name=_('User status'))
 
 
 class OrganizationProfile(models.Model):
