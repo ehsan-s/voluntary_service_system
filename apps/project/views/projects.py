@@ -31,6 +31,7 @@ def add_non_financial_project(request, org_name):
         organization_profile = OrganizationProfile.objects.get(profile__user__username=org_name)
         non_financial_project_form = NonFinancialProjectForm(p)
         skill = p['need']
+        skill = json.loads(skill)
         try:
             category = skill['category']
         except KeyError:
