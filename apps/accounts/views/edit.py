@@ -69,7 +69,7 @@ def edit_benefactor(request, username):
                 benefactor_skill.save()
             benefactor_skills.append(benefactor_skill)
         if user_profile_form.is_valid():
-            if benefactor_profile.is_valid():
+            if benefactor_profile_form.is_valid():
                 user_profile_form.save()
                 benefactor_profile = benefactor_profile_form.save()
                 benefactor_profile.skills.clear()
