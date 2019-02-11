@@ -11,6 +11,9 @@ class BenefactorSkill(models.Model):
     category = models.ForeignKey(SkillCategory)
     name = models.CharField(max_length=100, null=False, blank=False, unique=True, verbose_name=_('skill name‌'))
 
+    def as_json(self):
+        return dict(category=self.category.category, name=self.name)
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
@@ -18,6 +21,12 @@ class UserProfile(models.Model):
     tel_number = models.CharField(max_length=20, null=False, blank=False, verbose_name=_('Telephone number‌'))
     address = models.CharField(max_length=200, null=False, blank=False, verbose_name=_('Address‌'))
     activities = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Activities‌'))
+
+    STATUS_CHOICES = (
+        ('P', 'pending'),
+        ('V', 'verified'),
+    )
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P', verbose_name=_('User status'))
 
 
 class OrganizationProfile(models.Model):

@@ -51,7 +51,7 @@ def benefactor_request(request, benefactor_name):
 
 
 @csrf_exempt
-def org_participation_request(request, benefactor_name, project_id, org_name):
+def org_participation_request(request, benefactor_name, project_id):
     if request.method == 'POST':
         p = json.loads(request.body)
         description = p['request_desc']
