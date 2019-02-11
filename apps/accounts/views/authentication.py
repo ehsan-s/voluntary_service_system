@@ -96,6 +96,10 @@ def login(request):
         login_form = AuthenticationForm(data=p)
         if login_form.is_valid():
             user = login_form.get_user()
+
+            if user.status == 'P':
+                return JsonResponse({'status': '-1', 'message': 'User not verified'})
+
             auth_login(request, user)
             if BenefactorProfile.objects.filter(profile__user__username=user.username).exists():
                 return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'benefactor'})
