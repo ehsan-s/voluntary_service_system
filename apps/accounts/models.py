@@ -15,9 +15,9 @@ class BenefactorSkill(models.Model):
         return dict(category=self.category.category, name=self.name)
 
 
-a_cat = SkillCategory(category='معلم')
-a_cat.save()
-a_skl = BenefactorSkill(category=a_cat, name='فیزیک')
+# a_cat = SkillCategory(category='معلم')
+# a_cat.save()
+# a_skl = BenefactorSkill(category=a_cat, name='فیزیک')
 
 
 class UserProfile(models.Model):
