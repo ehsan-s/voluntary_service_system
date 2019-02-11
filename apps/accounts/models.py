@@ -15,6 +15,11 @@ class BenefactorSkill(models.Model):
         return dict(category=self.category.category, name=self.name)
 
 
+a_cat = SkillCategory(category='معلم')
+a_cat.save()
+a_skl = BenefactorSkill(category=a_cat, name='فیزیک')
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
     phone_number = models.CharField(max_length=20, null=False, blank=False, verbose_name=_('Mobile number‌'))
