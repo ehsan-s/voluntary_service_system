@@ -1,5 +1,6 @@
 import json
 from apps.project.models import *
+from apps.admin.models import *
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -167,3 +168,12 @@ def view_organization_feedback(request):
 
     else:
         return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def view_logs(request):
+    if request.method == "GET":
+        all_logs = list(Log.objects.all().values('message', 'time'))
+        return JsonResponse({'status': '0', 'logs': all_logs})
+    else:
+        return JsonResponse({'status': '-1', 'logs': 'just POST request'})
