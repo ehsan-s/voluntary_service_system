@@ -30,10 +30,11 @@ class UserProfileSignupForm(forms.ModelForm):
     tel_regex = RegexValidator(regex=r'^\d{8,15}$', message=_("Please enter your phone number correctly!"))
     tel_number = forms.CharField(validators=[tel_regex])
     address = forms.CharField(max_length=200, required=True)
+    city = forms.CharField(max_length=100, required=True)
 
     class Meta:
         model = UserProfile
-        fields = ('phone_number', 'tel_number', 'address', 'activities')
+        fields = ('phone_number', 'tel_number', 'address', 'activities', 'city')
 
 
 class BenefactorSignUpForm(forms.ModelForm):

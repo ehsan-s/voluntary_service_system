@@ -26,6 +26,7 @@ class UserProfile(models.Model):
     tel_number = models.CharField(max_length=20, null=False, blank=False, verbose_name=_('Telephone number‌'))
     address = models.CharField(max_length=200, null=False, blank=False, verbose_name=_('Address‌'))
     activities = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Activities‌'))
+    city = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
 
     STATUS_CHOICES = (
         ('P', 'pending'),
@@ -42,7 +43,8 @@ class OrganizationProfile(models.Model):
         return dict(username=self.profile.user.username,
                     email=self.profile.user.email,
                     phone_number=self.profile.phone_number, tel_number=self.profile.tel_number,
-                    address=self.profile.address, activities=self.profile.activities,
+                    address=self.profile.address, city=self.profile.city,
+                    activities=self.profile.activities,
                     name=self.name)
 
 
@@ -51,12 +53,20 @@ class BenefactorProfile(models.Model):
     age = models.IntegerField(null=False, blank=False, verbose_name=_('Age‌'))
     desires = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Desires'))
     skills = models.ManyToManyField(BenefactorSkill)
+    GENDER_CHOICES = (
+        ('M', 'مرد'),
+        ('F', 'زن'),
+        ('N', 'اهمیتی‌ ندارد'),
+    )
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
 
     def as_json(self):
         return dict(username=self.profile.user.username,
                     first_name=self.profile.user.first_name,
                     last_name=self.profile.user.last_name,
                     email=self.profile.user.email,
+                    gender=self.gender,
+                    city=self.profile.city,
                     phone_number=self.profile.phone_number, tel_number=self.profile.tel_number,
                     address=self.profile.address, activities=self.profile.activities,
                     age=self.age, desires=self.desires, skills=self.get_all_skills())
