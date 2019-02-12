@@ -2,6 +2,7 @@ from apps.project.models import *
 from apps.project.forms import FeedbackForm, NonFinancialProject
 from django.http import JsonResponse
 from django.db.models import F
+from apps.admin.models import Log
 from django.views.decorators.csrf import csrf_exempt
 import json
 
@@ -16,6 +17,13 @@ def send_feedback(request):
             feedback = feedback_form.save(commit=False)
             feedback.project = non_financial_project
             feedback.save()
+            org = feedback.project.organization.profile.user.username
+            benefactor = feedback.project.benefactor.profile.user.username
+            project_id = feedback.project.id
+            if p['feeder'] == 'benefactor':
+                Log(message='Feedback from {} to {} added for project {}'.format(benefactor, org, project_id)).save()
+            else:
+                Log(message='Feedback from {} to {} added for project {}'.format(org, benefactor, project_id)).save()
             return JsonResponse({'status': '0', 'message': 'feedback sent successfully'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(feedback_form.errors.items())})

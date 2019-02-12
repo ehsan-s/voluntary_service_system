@@ -1,6 +1,7 @@
 from apps.project.models import *
 from apps.project.forms import FinancialProjectForm, NonFinancialProjectForm
 from apps.accounts.models import OrganizationProfile
+from apps.admin.models import Log
 from django.http import JsonResponse
 from django.db.models import F
 from django.views.decorators.csrf import csrf_exempt
@@ -17,6 +18,7 @@ def add_financial_project(request, org_name):
             financial_project = financial_project_form.save(commit=False)
             financial_project.organization = organization_profile
             financial_project.save()
+            Log(message='Financial project with id {} added by {}'.format(financial_project.id, org_name)).save()
             return JsonResponse({'status': '0', 'message': 'Financial project added successfully'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(financial_project_form.errors.items())})
@@ -56,6 +58,7 @@ def add_non_financial_project(request, org_name):
             non_financial_project.organization = organization_profile
             non_financial_project.need = benefactor_skill
             non_financial_project.save()
+            Log(message='Non-financial project with id {} added by {}'.format(non_financial_project.id, org_name)).save()
             return JsonResponse({'status': '0', 'message': 'Non-Financial project added successfully'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(non_financial_project_form.errors.items())})
