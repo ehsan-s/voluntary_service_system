@@ -207,6 +207,7 @@ def add_schedule_benefactor(request, benefactor_name):
         for entry in schedule_times:
             schedule = Schedule(day=entry['day'], time=entry['time'])
             benefactor.schedule.add(schedule)
+        benefactor.save()
         return JsonResponse({'status': '0', 'message': 'schedule added successfully.'})
 
     else:
@@ -241,6 +242,7 @@ def add_schedule_project(request, project_id):
         for entry in schedule_times:
             schedule = Schedule(day=entry['day'], time=entry['time'])
             project.schedule.add(schedule)
+        project.save()
         return JsonResponse({'status': '0', 'message': 'schedule added successfully.'})
 
     else:

@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 
 
 def validate_time(value):
-    if value % 2 != 0 or value < 0 or value > 22:
+    if value % 2 != 0 or value < 6 or value > 22:
         raise ValidationError(
             _('%(value)s is not valid'),
             params={'value': value},
@@ -28,10 +28,10 @@ class Schedule(models.Model):
     )
     day = models.IntegerField(choices=DAY_CHOICES, verbose_name=_('days in week'))
 
-    time = models.IntegerField(validators=[validate_time], verbose_name=_('times in day'))
+    start_time = models.IntegerField(validators=[validate_time], verbose_name=_('times in day'))
 
     def as_json(self):
-        return dict(day=self.day, time=self.time)
+        return dict(day=self.day, time=self.start_time)
 
 
 class Project(models.Model):
