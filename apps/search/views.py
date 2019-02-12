@@ -36,22 +36,30 @@ def organization_search(request):
 def benefactor_nonfinancial_search(request):
     if request.method == "POST":
         p = json.loads(request.body)
-        if p['gender'] is None:
-            p['gender'] = 'N'
+        print(p)
+        if p['gender'] is None or p['gender'] == '':
+            p['gender'] = 'اهمیتی ندارد'
         benefactor_search_form = benefactorNonFinancialForm(p)
+        print(benefactor_search_form.errors)
         if benefactor_search_form.is_valid():
-            projects = NonFinancialProject.objects.filter(status='non_started')
-            if benefactor_search_form.cleaned_data['city'] is not None:
+            projects = NonFinancialProject.objects.filter(status='not_started')
+            print(projects)
+            print(NonFinancialProject.objects.all())
+            for project in NonFinancialProject.objects.all():
+                print(project.status)
+            if benefactor_search_form.cleaned_data['city'] is not None and benefactor_search_form.cleaned_data['city'] != '':
                 projects = projects.filter(location=benefactor_search_form.cleaned_data['city'])
-            if benefactor_search_form.cleaned_data['gender'] is not 'N':
+            if benefactor_search_form.cleaned_data['gender'] != 'اهمیتی ندارد' and benefactor_search_form.cleaned_data['gender'] != '':
                 projects = projects.filter(gender=benefactor_search_form.cleaned_data['gender'])
-            if benefactor_search_form.cleaned_data['org_username'] is not None:
+            if benefactor_search_form.cleaned_data['org_username'] is not None and benefactor_search_form.cleaned_data['org_username'] != '':
                 projects = projects.filter(organization__profile__user__username=benefactor_search_form.cleaned_data['org_username'])
-            if benefactor_search_form.cleaned_data['project_name'] is not None:
+            if benefactor_search_form.cleaned_data['project_name'] is not None and benefactor_search_form.cleaned_data['project_name'] != '':
                 projects = projects.filter(name=benefactor_search_form.cleaned_data['project_name'])
             data = []
+            print(projects)
             for project in projects:
-                data.append(project.as_jaon())
+                data.append(project.as_json())
+            print(data)
             return JsonResponse({'status': '0', 'search': data})
         else:
             return JsonResponse({'status': '-1', 'message': dict(benefactor_search_form.errors.items())})

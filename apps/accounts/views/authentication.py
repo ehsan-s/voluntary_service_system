@@ -3,6 +3,7 @@ from apps.accounts.forms import (BenefactorSignUpForm, UserProfileSignupForm, Be
                                  OrgUserSignupForm, OrgSignUpForm)
 from apps.accounts.models import UserProfile
 from django.contrib.auth import login as auth_login
+from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from apps.accounts.models import SkillCategory, BenefactorSkill, BenefactorProfile
 from django.http import JsonResponse
@@ -109,14 +110,34 @@ def login(request):
 
             auth_login(request, user)
             if BenefactorProfile.objects.filter(profile__user__username=user.username).exists():
-                log = Log(message='Benefactor {} has a login'.format(user.username))
+                log = Log(message='Benefactor {} get login'.format(user.username))
                 log.save()
                 return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'benefactor'})
             else:
-                log = Log(message='Organization {} has a login'.format(user.username))
+                log = Log(message='Organization {} get login'.format(user.username))
                 log.save()
                 return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'organization'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(login_form.errors.items())})
     else:
         return JsonResponse({'status': '-1', 'message': 'just POST request'})
+
+
+@csrf_exempt
+def logout(request):
+    if request.method == "POST":
+        p = json.loads(request.body)
+        auth_logout(request)
+        try:
+            username = p['username']
+        except KeyError:
+            return JsonResponse({'status': '0', 'message': [{'username': 'This field is required'}]})
+
+        if BenefactorProfile.objects.filter(profile__user__username=username).exists():
+            Log(message='Benefactor {} get logout'.format(username)).save()
+            return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'benefactor'})
+        else:
+            Log(message='Organization {} get logout'.format(username)).save()
+            return JsonResponse({'status': '0', 'message': 'Successful Logout', 'user': 'organization'})
+    else:
+        return JsonResponse({'status': '-1', 'message': 'not POST request'})

@@ -29,7 +29,6 @@ class FinancialProject(Project):
         benefactors_list = []
         for ben in self.benefactors.all():
             benefactors_list.append(ben.as_json())
-
         return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
                     id=self.id, benefactors=benefactors_list,
                     money_needed=self.money_needed, money_donated=self.money_donated)
@@ -54,9 +53,15 @@ class NonFinancialProject(Project):
             schedule_list.append(schedule.as_json())
 
     def as_json(self):
-        return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
-                    id=self.id, benefactor=self.benefactor.as_json(), schedule=self.get_schedule_list(),
-                    need_=dict(name=self.need.name, category=self.need.category),
+        if self.benefactor is not None:
+            return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
+                    id=self.id, benefactor=self.benefactor.as_json(),
+                    need_=dict(name=self.need.name, category=self.need.category.category),
+                    gender=self.gender, age=self.age, location=self.location)
+        else:
+            return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
+                    id=self.id, benefactor=None,
+                    need_=dict(name=self.need.name, category=self.need.category.category),
                     gender=self.gender, age=self.age, location=self.location)
 
 
