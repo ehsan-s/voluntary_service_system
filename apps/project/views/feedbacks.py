@@ -38,8 +38,9 @@ def org_feedback(request, org_name):
                 .filter(project__organization__profile__user__username=org_name, feeder=feeder)
                                   .annotate(category=F('project__need__category__category'),
                                             skill_name=F('project__need__name'),
-                                            username=F('project__benefactor__profile__user__username'))
-                                  .values('category', 'skill_name', 'rate', 'feedback', 'username'))
+                                            username=F('project__benefactor__profile__user__username'),
+                                            project_name=F('project__name'))
+                                  .values('category', 'skill_name', 'rate', 'feedback', 'username', 'project_name'))
         return JsonResponse({'status': '0', 'feedbacks': feedbacks_list})
     else:
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
@@ -60,8 +61,9 @@ def benefactor_feedback(request, benefactor_name):
                 .filter(project__benefactor__profile__user__username=benefactor_name, feeder=feeder)
                                   .annotate(category=F('project__need__category__category'),
                                             skill_name=F('project__need__name'),
-                                            username=F('project__organization__profile__user__username'))
-                                  .values('category', 'skill_name', 'rate', 'feedback', 'username'))
+                                            username=F('project__organization__profile__user__username'),
+                                            project_name=F('project__name'))
+                                  .values('category', 'skill_name', 'rate', 'feedback', 'username', 'project_name'))
         return JsonResponse({'status': '0', 'feedbacks': feedbacks_list})
     else:
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
