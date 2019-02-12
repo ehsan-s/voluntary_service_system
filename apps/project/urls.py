@@ -18,6 +18,10 @@ urlpatterns = [
     url(r'^requests/benefactor/pay/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.benefactor_pay, name='benefactor_pay_financial_project'),
     url(r'^requests/accept/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.project_accept, name='accept_request'),
     url(r'^requests/reject/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.project_reject, name='reject_request'),
+    url(r'^benefactor/view_schedule/(?P<benefactor_name>.+)/$', views.view_schedule_benefactor, name='view_schedule_for_benefactor'),
+    url(r'^benefactor/add_schedule/(?P<benefactor_name>.+)/$', views.add_schedule_benefactor, name='add_schedule_for_benefactor'),
+    url(r'^project/view_schedule/(?P<project_id>.+)/$', views.view_schedule_project, name='view_schedule_for_project'),
+    url(r'^project/add_schedule/(?P<project_id>.+)/$', views.add_schedule_project, name='add_schedule_for_project'),
     url(r'^project/done/(?P<project_id>.+)/$', views.end_project, name='end_project')
 ]
 

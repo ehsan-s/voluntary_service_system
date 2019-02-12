@@ -180,6 +180,74 @@ def project_reject(request, benefactor_name, project_id):
 
 
 @csrf_exempt
+def view_schedule_benefactor(request, benefactor_name):
+    if request.method == "GET":
+        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        if BenefactorProfile.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'benefactor does not exist.'})
+
+        return JsonResponse({'status': '0', 'list': benefactor.get_schedule_list()})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def add_schedule_benefactor(request, benefactor_name):
+    if request.method == 'POST':
+        p = json.loads(request.body)
+        schedule_times = p['schedule_times']
+
+        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        if BenefactorProfile.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'benefactor does not exist.'})
+
+        benefactor.schedule.clear()
+        schedule_times = json.loads(schedule_times)
+        for entry in schedule_times:
+            schedule = Schedule(day=entry['day'], time=entry['time'])
+            benefactor.schedule.add(schedule)
+        return JsonResponse({'status': '0', 'message': 'schedule added successfully.'})
+
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+
+
+@csrf_exempt
+def view_schedule_project(request, project_id):
+    if request.method == "GET":
+        project = NonFinancialProject.objects.get(id=project_id)
+        if NonFinancialProject.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'project does not exist.'})
+
+        return JsonResponse({'status': '0', 'list': project.get_schedule_list()})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def add_schedule_project(request, project_id):
+    if request.method == 'POST':
+        p = json.loads(request.body)
+        schedule_times = p['schedule_times']
+
+        project = NonFinancialProject.objects.get(id=project_id)
+        if NonFinancialProject.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'project does not exist.'})
+
+        project.schedule.clear()
+        schedule_times = json.loads(schedule_times)
+        for entry in schedule_times:
+            schedule = Schedule(day=entry['day'], time=entry['time'])
+            project.schedule.add(schedule)
+        return JsonResponse({'status': '0', 'message': 'schedule added successfully.'})
+
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+
+
+@csrf_exempt
 def end_project(request, project_id):
     if request.method == 'POST':
         project = Project.objects.get(id=project_id)

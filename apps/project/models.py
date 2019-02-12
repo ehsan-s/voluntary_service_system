@@ -5,6 +5,33 @@ from apps.accounts.models import *
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
+
+
+def validate_time(value):
+    if value % 2 != 0 or value < 0 or value > 22:
+        raise ValidationError(
+            _('%(value)s is not valid'),
+            params={'value': value},
+        )
+
+
+class Schedule(models.Model):
+    DAY_CHOICES = (
+        (0, 'Saturday'),
+        (1, 'Sunday'),
+        (2, 'Monday'),
+        (3, 'Tuesday'),
+        (4, 'Wednesday'),
+        (5, 'Thursday'),
+        (6, 'Friday')
+    )
+    day = models.IntegerField(choices=DAY_CHOICES, verbose_name=_('days in week'))
+
+    time = models.IntegerField(validators=[validate_time], verbose_name=_('times in day'))
+
+    def as_json(self):
+        return dict(day=self.day, time=self.time)
 
 
 class Project(models.Model):
@@ -28,6 +55,7 @@ class FinancialProject(Project):
         benefactors_list = []
         for ben in self.benefactors.all():
             benefactors_list.append(ben.as_json())
+
         return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
                     id=self.id, benefactors=benefactors_list,
                     money_needed=self.money_needed, money_donated=self.money_donated)
@@ -44,10 +72,16 @@ class NonFinancialProject(Project):
     gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
     age = models.IntegerField(null=True, blank=True, verbose_name=_('Age‌'))
     location = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
+    schedule = models.ManyToManyField(Schedule)
+
+    def get_schedule_list(self):
+        schedule_list = []
+        for schedule in self.schedule.all():
+            schedule_list.append(schedule.as_json())
 
     def as_json(self):
         return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
-                    id=self.id, benefactor=self.benefactor.as_json(),
+                    id=self.id, benefactor=self.benefactor.as_json(), schedule=self.get_schedule_list(),
                     need_=dict(name=self.need.name, category=self.need.category),
                     gender=self.gender, age=self.age, location=self.location)
 

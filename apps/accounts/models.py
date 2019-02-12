@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from apps.project.models import Schedule
 
 
 class SkillCategory(models.Model):
@@ -26,7 +27,7 @@ class UserProfile(models.Model):
     tel_number = models.CharField(max_length=20, null=False, blank=False, verbose_name=_('Telephone number‌'))
     address = models.CharField(max_length=200, null=False, blank=False, verbose_name=_('Address‌'))
     activities = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Activities‌'))
-    city = models.CharField(max_length=100, default="Tehran", null=False, blank=False, verbose_name=_('location'))
+    city = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
 
     STATUS_CHOICES = (
         ('P', 'pending'),
@@ -54,10 +55,17 @@ class BenefactorProfile(models.Model):
     desires = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Desires'))
     skills = models.ManyToManyField(BenefactorSkill)
     GENDER_CHOICES = (
-        ('مرد', 'مرد'),
-        ('زن', 'زن'),
+        ('M', 'مرد'),
+        ('F', 'زن'),
+        ('N', 'اهمیتی‌ ندارد'),
     )
-    gender = models.CharField(max_length=3, choices=GENDER_CHOICES, default='مرد', verbose_name=_('gender‌'))
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
+    schedule = models.ManyToManyField(Schedule)
+
+    def get_schedule_list(self):
+        schedule_list = []
+        for schedule in self.schedule.all():
+            schedule_list.append(schedule.as_json())
 
     def as_json(self):
         return dict(username=self.profile.user.username,
@@ -68,7 +76,8 @@ class BenefactorProfile(models.Model):
                     city=self.profile.city,
                     phone_number=self.profile.phone_number, tel_number=self.profile.tel_number,
                     address=self.profile.address, activities=self.profile.activities,
-                    age=self.age, desires=self.desires, skills=self.get_all_skills())
+                    age=self.age, desires=self.desires, skills=self.get_all_skills(),
+                    schedule=self.get_schedule_list())
 
     def get_all_skills(self):
         all_skills = []
