@@ -11,16 +11,16 @@ import json
 def organization_search(request):
     if request.method == "POST":
         p = json.loads(request.body)
-        if p['gender'] is None:
-            p['gender'] = 'N'
+        if p['gender'] is None or p['gender'] == '':
+            p['gender'] = 'اهمیتی ندارد'
         org_search_form = organizationNonFinancialForm(p)
         if org_search_form.is_valid():
             benefactors = BenefactorProfile.objects.all()
-            if org_search_form.cleaned_data['city'] is not None:
+            if org_search_form.cleaned_data['city'] is not None and org_search_form.cleaned_data['city'] != '':
                 benefactors = benefactors.filter(profile__city=org_search_form.cleaned_data['city'])
-            if org_search_form.cleaned_data['gender'] is not 'N':
+            if org_search_form.cleaned_data['gender'] is not 'اهمیتی ندارد' and org_search_form.cleaned_data['gender'] != '':
                 benefactors = benefactors.filter(gender=org_search_form.cleaned_data['gender'])
-            if org_search_form.cleaned_data['benefactor_username'] is not None:
+            if org_search_form.cleaned_data['benefactor_username'] is not None and org_search_form.cleaned_data['benefactor_username'] != '':
                 benefactors = benefactors.filter(profile__user__username=org_search_form.cleaned_data['benefactor_username'])
             data = []
             for ben in benefactors:
@@ -69,7 +69,7 @@ def benefactor_nonfinancial_search(request):
 
 @csrf_exempt
 def benefactor_financial_search(request):
-    if request.method == "POST":
+    if request.method == "GET":
         data = []
         for project in FinancialProject.objects.filter(status='in_progress'):
             data.append(project.as_jaon())

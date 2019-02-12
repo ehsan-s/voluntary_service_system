@@ -90,11 +90,11 @@ class BenefactorProfile(models.Model):
     desires = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Desires'))
     skills = models.ManyToManyField(BenefactorSkill)
     GENDER_CHOICES = (
-        ('M', 'مرد'),
-        ('F', 'زن'),
-        ('N', 'اهمیتی‌ ندارد'),
+        ('مرد', 'مرد'),
+        ('زن', 'زن'),
+        ('اهمیتی ندارد', 'اهمیتی‌ ندارد'),
     )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
     schedule = models.ManyToManyField(Schedule)
 
     def get_schedule_list(self):
