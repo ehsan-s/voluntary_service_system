@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^view/skills/$', views.view_skills, name='view_all_skills'),
     url(r'^view/feedback_ben/$', views.view_benefactor_feedback, name='view_benfactor_feedback_for_organization'),
     url(r'^view/feedback_org/$', views.view_organization_feedback, name='view_organization_feedback_for_benfactor'),
+    url(r'^view/logs/$', views.view_logs, name='view all logs of system'),
 
     url(r'^manage/skills/$', views.add_skill, name='add_new_skill'),
     url(r'^manage/users/verify/(?P<user_name>.+)/$', views.verify_user, name='user_authentication'),
