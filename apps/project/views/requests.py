@@ -85,3 +85,26 @@ def benefactor_participation_request(request, benefactor_name, project_id):
 
         else:
             return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+
+
+@csrf_exempt
+def benefactor_pay(request, benefactor_name, project_id):
+    if request.method == 'POST':
+        p = json.loads(request.body)
+
+        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        if BenefactorProfile.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'benefactor does not exist'})
+
+        project = FinancialProject.objects.get(id=project_id)
+        if FinancialProject.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'financial project does not exist'})
+
+        donation = p['amount']
+        project.money_donated += donation
+        if benefactor not in project.benefactors:
+            project.benefactors.add(benefactor)
+        return JsonResponse({'status': '0', 'message': 'payment has been successfully accomplished.'})
+
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
