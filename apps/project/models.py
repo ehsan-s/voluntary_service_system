@@ -14,7 +14,7 @@ class Project(models.Model):
         ('in_progress', 'in progress'),
         ('done', 'done'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress', verbose_name=_('status‌'))
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started', verbose_name=_('status‌'))
     name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('project name‌'))
 
 
