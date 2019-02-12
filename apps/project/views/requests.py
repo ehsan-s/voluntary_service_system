@@ -65,8 +65,8 @@ def org_participation_request(request, benefactor_name, project_id):
             request.save()
             return JsonResponse({'status': '0', 'message': 'request has been successfully submitted.'})
 
-        else:
-            return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
 
 
 @csrf_exempt
@@ -83,8 +83,8 @@ def benefactor_participation_request(request, benefactor_name, project_id):
             request.save()
             return JsonResponse({'status': '0', 'message': 'request has been successfully submitted.'})
 
-        else:
-            return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
 
 
 @csrf_exempt
@@ -106,5 +106,57 @@ def benefactor_pay(request, benefactor_name, project_id):
             project.benefactors.add(benefactor)
         return JsonResponse({'status': '0', 'message': 'payment has been successfully accomplished.'})
 
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+
+
+@csrf_exempt
+def project_accept(request, benefactor_name, project_id):
+    if request.method == 'POST':
+        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        project = NonFinancialProject.objects.get(id=project_id)
+
+        if project.benefactor is None:
+            project.benefactor = benefactor
+            project.save()
+            benefactor.nonfinancialproject_set.add(project)
+            benefactor.save()
+            request = Request.objects.get(benefactor__profile__user__username=benefactor_name, project__id=project_id)
+            if Request.DoesNotExist:
+                return JsonResponse({'status': '-1', 'error': 'request does not exist'})
+            else:
+                request.status = 'accepted'
+                request.save()
+                return JsonResponse({'status': '0', 'message': 'benefactor accepted the request.'})
+        else:
+            return JsonResponse({'status': '-1', 'error': 'request was successfully accepted'})
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+
+
+@csrf_exempt
+def project_reject(request, benefactor_name, project_id):
+    if request.method == 'POST':
+        request = Request.objects.get(benefactor__profile__user__username=benefactor_name, project__id=project_id)
+        if Request.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'request does not exist'})
+        else:
+            request.status = 'rejected'
+            request.save()
+            return JsonResponse({'status': '0', 'message': 'request was successfully rejected.'})
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+
+
+@csrf_exempt
+def end_project(request, project_id):
+    if request.method == 'POST':
+        project = Project.objects.get(id=project_id)
+        if Project.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'project does not exist'})
+        else:
+            project.status = 'done'
+            project.save()
+            return JsonResponse({'status': '0', 'message': 'project is done.'})
     else:
         return JsonResponse({'status': '-1', 'error': 'request is not valid.'})

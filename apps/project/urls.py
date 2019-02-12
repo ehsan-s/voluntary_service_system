@@ -12,7 +12,12 @@ urlpatterns = [
     url(r'^feedbacks/benefactor/(?P<benefactor_name>.+)/$', views.benefactor_feedback, name='benefactor_feedback'),
     url(r'^requests/organization/(?P<org_name>.+)/$', views.org_request, name='org_request'),
     url(r'^requests/benefactor/(?P<benefactor_name>.+)/$', views.benefactor_request, name='benefactor_request'),
+
     url(r'^requests/organization/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.org_participation_request, name='org_request'),
     url(r'^requests/benefactor/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.benefactor_participation_request, name='benefactor_request'),
-    url(r'^requests/benefactor/pay/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.benefactor_pay, name='benefactor_pay_financial_project')
+    url(r'^requests/benefactor/pay/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.benefactor_pay, name='benefactor_pay_financial_project'),
+    url(r'^requests/accept/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.project_accept, name='accept_request'),
+    url(r'^requests/reject/(?P<benefactor_name>.+)/(?P<project_id>.+)/$', views.project_reject, name='reject_request'),
+    url(r'^project/done/(?P<project_id>.+)/$', views.end_project, name='end_project')
 ]
+
