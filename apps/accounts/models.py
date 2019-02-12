@@ -26,7 +26,7 @@ class UserProfile(models.Model):
     tel_number = models.CharField(max_length=20, null=False, blank=False, verbose_name=_('Telephone number‌'))
     address = models.CharField(max_length=200, null=False, blank=False, verbose_name=_('Address‌'))
     activities = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Activities‌'))
-    city = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
+    city = models.CharField(max_length=100, default="Tehran", null=False, blank=False, verbose_name=_('location'))
 
     STATUS_CHOICES = (
         ('P', 'pending'),
@@ -54,11 +54,10 @@ class BenefactorProfile(models.Model):
     desires = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('Desires'))
     skills = models.ManyToManyField(BenefactorSkill)
     GENDER_CHOICES = (
-        ('M', 'مرد'),
-        ('F', 'زن'),
-        ('N', 'اهمیتی‌ ندارد'),
+        ('مرد', 'مرد'),
+        ('زن', 'زن'),
     )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
+    gender = models.CharField(max_length=3, choices=GENDER_CHOICES, default='مرد', verbose_name=_('gender‌'))
 
     def as_json(self):
         return dict(username=self.profile.user.username,
