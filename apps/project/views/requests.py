@@ -126,12 +126,14 @@ def benefactor_pay(request, benefactor_name, project_id):
     if request.method == 'POST':
         p = json.loads(request.body)
 
-        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
-        if BenefactorProfile.DoesNotExist:
+        try:
+            benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        except BenefactorProfile.DoesNotExist:
             return JsonResponse({'status': '-1', 'message': 'benefactor does not exist'})
 
-        project = FinancialProject.objects.get(id=project_id)
-        if FinancialProject.DoesNotExist:
+        try:
+            project = FinancialProject.objects.get(id=project_id)
+        except FinancialProject.DoesNotExist:
             return JsonResponse({'status': '-1', 'message': 'financial project does not exist'})
 
         donation = p['amount']
@@ -160,10 +162,11 @@ def project_accept(request, benefactor_name, project_id):
             project.save()
             benefactor.nonfinancialproject_set.add(project)
             benefactor.save()
-            request = Request.objects.get(benefactor__profile__user__username=benefactor_name, project__id=project_id)
-            if Request.DoesNotExist:
+            try:
+                request = Request.objects.get(benefactor__profile__user__username=benefactor_name, project__id=project_id)
+            except Request.DoesNotExist:
                 return JsonResponse({'status': '-1', 'message': 'request does not exist'})
-            else:
+            finally:
                 request.status = 'accepted'
                 request.save()
                 organization = request.project.organization.profile.user.username
@@ -183,10 +186,11 @@ def project_accept(request, benefactor_name, project_id):
 @csrf_exempt
 def project_reject(request, benefactor_name, project_id):
     if request.method == 'POST':
-        request = Request.objects.get(benefactor__profile__user__username=benefactor_name, project__id=project_id)
-        if Request.DoesNotExist:
+        try:
+            request = Request.objects.get(benefactor__profile__user__username=benefactor_name, project__id=project_id)
+        except Request.DoesNotExist:
             return JsonResponse({'status': '-1', 'message': 'request does not exist'})
-        else:
+        finally:
             request.status = 'rejected'
             request.save()
             organization = request.project.organization.profile.user.username
@@ -204,8 +208,9 @@ def project_reject(request, benefactor_name, project_id):
 @csrf_exempt
 def view_schedule_benefactor(request, benefactor_name):
     if request.method == "GET":
-        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
-        if BenefactorProfile.DoesNotExist:
+        try:
+            benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        except BenefactorProfile.DoesNotExist:
             return JsonResponse({'status': '-1', 'error': 'benefactor does not exist.'})
 
         return JsonResponse({'status': '0', 'list': benefactor.get_schedule_list()})
@@ -220,8 +225,9 @@ def add_schedule_benefactor(request, benefactor_name):
         p = json.loads(request.body)
         schedule_times = p['schedule_times']
 
-        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
-        if BenefactorProfile.DoesNotExist:
+        try:
+            benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        except BenefactorProfile.DoesNotExist:
             return JsonResponse({'status': '-1', 'error': 'benefactor does not exist.'})
 
         benefactor.schedule.clear()
@@ -239,8 +245,9 @@ def add_schedule_benefactor(request, benefactor_name):
 @csrf_exempt
 def view_schedule_project(request, project_id):
     if request.method == "GET":
-        project = NonFinancialProject.objects.get(id=project_id)
-        if NonFinancialProject.DoesNotExist:
+        try:
+            project = NonFinancialProject.objects.get(id=project_id)
+        except NonFinancialProject.DoesNotExist:
             return JsonResponse({'status': '-1', 'error': 'project does not exist.'})
 
         return JsonResponse({'status': '0', 'list': project.get_schedule_list()})
@@ -255,8 +262,9 @@ def add_schedule_project(request, project_id):
         p = json.loads(request.body)
         schedule_times = p['schedule_times']
 
-        project = NonFinancialProject.objects.get(id=project_id)
-        if NonFinancialProject.DoesNotExist:
+        try:
+            project = NonFinancialProject.objects.get(id=project_id)
+        except NonFinancialProject.DoesNotExist:
             return JsonResponse({'status': '-1', 'error': 'project does not exist.'})
 
         project.schedule.clear()
@@ -274,10 +282,11 @@ def add_schedule_project(request, project_id):
 @csrf_exempt
 def end_project(request, project_id):
     if request.method == 'POST':
-        project = Project.objects.get(id=project_id)
-        if Project.DoesNotExist:
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
             return JsonResponse({'status': '-1', 'message': 'project does not exist'})
-        else:
+        finally:
             project.status = 'done'
             project.save()
             benefactor_name = project.benefactor.profile.user.username

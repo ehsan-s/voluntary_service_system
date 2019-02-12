@@ -11,19 +11,22 @@ def add_skill(request):
         category = p['category']
         name = p['name']
 
-        existing_skill_category = SkillCategory.objects.get(category=category)
-        if existing_skill_category is None:
+        try:
+            existing_skill_category = SkillCategory.objects.get(category=category)
+        except SkillCategory.DoesNotExist:
             skill_category = SkillCategory(category=category)
             skill_category.save()
             benefactor_skill = BenefactorSkill(name=name, category=skill_category)
             benefactor_skill.save()
             return JsonResponse({'status': '0', 'message': 'skill has been successfully added.'})
 
-        elif BenefactorSkill.objects.get(name=name, category__category=category) is None:
+        try:
+            BenefactorSkill.objects.get(name=name, category__category=category)
+        except BenefactorSkill.DoesNotExist:
             benefactor_skill = BenefactorSkill(name=name, category=existing_skill_category)
             benefactor_skill.save()
 
-        else:
+        finally:
             return JsonResponse({'status': '-1', 'error': 'duplicate skill'})
 
     else:
