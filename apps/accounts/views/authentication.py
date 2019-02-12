@@ -6,6 +6,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from apps.accounts.models import SkillCategory, BenefactorSkill, BenefactorProfile
 from django.http import JsonResponse
+from apps.admin.models import Log
 import json
 
 
@@ -53,6 +54,8 @@ def register_benefactor(request):
                     benefactor.save()
                     for skill in benefactor_skills:
                         benefactor.skills.add(skill)
+                    log = Log(message='Benefactor {} registered'.format(user.username))
+                    log.save()
                     return JsonResponse({'status': '0', 'message': 'Benefactor registered successfully'})
                 else:
                     return JsonResponse({'status': '-1', 'message': dict(benefactor_form.errors.items())})
@@ -77,9 +80,11 @@ def register_organization(request):
                     user_profile = user_profile_form.save(commit=False)
                     user_profile.user = user
                     user_profile.save()
-                    benefactor_form = org_form.save(commit=False)
-                    benefactor_form.profile = user_profile
-                    benefactor_form.save()
+                    org = org_form.save(commit=False)
+                    org.profile = user_profile
+                    org.save()
+                    log = Log(message='Organization {} registered'.format(user.username))
+                    log.save()
                     return JsonResponse({'status': '0', 'message': 'Organization registered successfully'})
                 else:
                     return JsonResponse({'status': '-1', 'message': dict(org_form.errors.items())})
@@ -104,8 +109,12 @@ def login(request):
 
             auth_login(request, user)
             if BenefactorProfile.objects.filter(profile__user__username=user.username).exists():
+                log = Log(message='Benefactor {} has a login'.format(user.username))
+                log.save()
                 return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'benefactor'})
             else:
+                log = Log(message='Organization {} has a login'.format(user.username))
+                log.save()
                 return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'organization'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(login_form.errors.items())})
