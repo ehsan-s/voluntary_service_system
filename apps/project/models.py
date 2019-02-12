@@ -10,10 +10,11 @@ from django.contrib.contenttypes.models import ContentType
 class Project(models.Model):
     organization = models.ForeignKey(OrganizationProfile)
     STATUS_CHOICES = (
+        ('not_started', 'not_started'),
         ('in_progress', 'in progress'),
         ('done', 'done'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in_progress', verbose_name=_('status‌'))
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='not_started', verbose_name=_('status‌'))
     name = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('project name‌'))
 
 
@@ -36,11 +37,11 @@ class NonFinancialProject(Project):
     benefactor = models.ForeignKey(BenefactorProfile, null=True)
     need = models.ForeignKey(BenefactorSkill, null=False)
     GENDER_CHOICES = (
-        ('M', 'مرد'),
-        ('F', 'زن'),
-        ('N', 'اهمیتی‌ ندارد'),
+        ('مرد', 'مرد'),
+        ('زن', 'زن'),
+        ('اهمیتی ندارد', 'اهمیتی‌ ندارد'),
     )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
+    gender = models.CharField(max_length=20, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
     age = models.IntegerField(null=True, blank=True, verbose_name=_('Age‌'))
     location = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
 
