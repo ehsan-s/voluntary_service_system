@@ -5,7 +5,9 @@ from apps.accounts import views as vu
 app_name = "accounts"
 urlpatterns = [
     url(r'^view/benefactors/$', views.view_all_benefactors, name='view_all_benefactors'),
+    url(r'^view/pending_benefactors/$', views.view_pending_benefactors, name='view_pending_benefactors'),
     url(r'^view/organizations/$', views.view_all_organizations, name='view_all_organizations'),
+    url(r'^view/pending_organizations/$', views.view_pending_organizations, name='view_all_organizations'),
     url(r'^view/fprojects/$', views.view_all_fprojects, name='view_all_financial_projects'),
     url(r'^view/fprojects_ben/(?P<user_name>.+)/$', views.view_benefactor_fprojects, name='view_benefactor_financial_projects'),
     url(r'^view/fprojects_org/(?P<user_name>.+)/$', views.view_organization_fprojects, name='view_organization_financial_projects'),

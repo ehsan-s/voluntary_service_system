@@ -17,11 +17,37 @@ def view_all_benefactors(request):
 
 
 @csrf_exempt
+def view_pending_benefactors(request):
+    if request.method == "GET":
+        data = []
+        for benefactor in BenefactorProfile.objects.all():
+            if benefactor.profile.status == 'P':
+                data.append(benefactor.as_json())
+        return JsonResponse({'status': '0', 'list': data})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
 def view_all_organizations(request):
     if request.method == "GET":
         data = []
         for organization in OrganizationProfile.objects.all():
             data.append(organization.as_json())
+        return JsonResponse({'status': '0', 'list': data})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def view_pending_organizations(request):
+    if request.method == "GET":
+        data = []
+        for organization in OrganizationProfile.objects.all():
+            if organization.profile.status == 'P':
+                data.append(organization.as_json())
         return JsonResponse({'status': '0', 'list': data})
 
     else:
