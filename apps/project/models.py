@@ -10,7 +10,7 @@ from django.contrib.contenttypes.models import ContentType
 class Project(models.Model):
     organization = models.ForeignKey(OrganizationProfile)
     STATUS_CHOICES = (
-        ('not_started', 'not_started')
+        ('not_started', 'not_started'),
         ('in_progress', 'in progress'),
         ('done', 'done'),
     )
