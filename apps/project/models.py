@@ -37,9 +37,9 @@ class NonFinancialProject(Project):
     benefactor = models.ForeignKey(BenefactorProfile, null=True)
     need = models.ForeignKey(BenefactorSkill, null=False)
     GENDER_CHOICES = (
-        ('M', 'مرد'),
-        ('F', 'زن'),
-        ('N', 'اهمیتی‌ ندارد'),
+        ('مرد', 'مرد'),
+        ('زن', 'زن'),
+        ('اهمیتی ندارد', 'اهمیتی‌ ندارد'),
     )
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='N', verbose_name=_('gender‌'))
     age = models.IntegerField(null=True, blank=True, verbose_name=_('Age‌'))
