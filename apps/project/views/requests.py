@@ -61,16 +61,27 @@ def org_participation_request(request, benefactor_name, project_id):
         project = NonFinancialProject.objects.get(id=project_id)
 
         if project.need in benefactor.skills:
-            request = Request(benefactor=benefactor_name, project=project_id, requester='organization',
-                              request_desc=description)
-            request.save()
-            organization = project.organization.profile.user.username
-            Log(message='send request from organization {} to benefactor {} for project {}'.format(organization,
-                                                                                                   benefactor_name,
-                                                                                                   project_id)).save()
-            return JsonResponse({'status': '0', 'message': 'request has been successfully submitted.'})
+            project_schedule = project.schedule.all()
+            benefactor_schedule = benefactor.schedule.all()
+            flag = 0
+            for schedule in project_schedule:
+                if schedule not in benefactor_schedule:
+                    flag = 1
+
+            if flag == 1:
+                return JsonResponse({'status': '-1', 'message': 'Schedule does not match.'})
+
+            else:
+                request = Request(benefactor=benefactor_name, project=project_id, requester='organization',
+                                  request_desc=description)
+                request.save()
+                organization = project.organization.profile.user.username
+                Log(message='send request from organization {} to benefactor {} for project {}'.format(organization,
+                                                                                                       benefactor_name,
+                                                                                                       project_id)).save()
+                return JsonResponse({'status': '0', 'message': 'request has been successfully submitted.'})
         else:
-            return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need'})
+            return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need.'})
     else:
         return JsonResponse({'status': '-1', 'message': 'request is not valid.'})
 
@@ -85,16 +96,27 @@ def benefactor_participation_request(request, benefactor_name, project_id):
         project = NonFinancialProject.objects.get(id=project_id)
 
         if project.need in benefactor.skills:
-            request = Request(benefactor=benefactor_name, project=project_id, requester='benefactor',
-                              request_desc=description)
-            request.save()
-            organization = project.organization.profile.user.username
-            Log(message='send request from benefactor {} to organization {} for project {}'.format(benefactor_name,
-                                                                                                   organization,
-                                                                                                   project_id)).save()
-            return JsonResponse({'status': '0', 'message': 'Request has been successfully submitted.'})
+            project_schedule = project.schedule.all()
+            benefactor_schedule = benefactor.schedule.all()
+            flag = 0
+            for schedule in project_schedule:
+                if schedule not in benefactor_schedule:
+                    flag = 1
+
+            if flag == 1:
+                return JsonResponse({'status': '-1', 'message': 'Schedule does not match.'})
+
+            else:
+                request = Request(benefactor=benefactor_name, project=project_id, requester='benefactor',
+                                  request_desc=description)
+                request.save()
+                organization = project.organization.profile.user.username
+                Log(message='send request from benefactor {} to organization {} for project {}'.format(benefactor_name,
+                                                                                                       organization,
+                                                                                                       project_id)).save()
+                return JsonResponse({'status': '0', 'message': 'Request has been successfully submitted.'})
         else:
-            return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need'})
+            return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need.'})
     else:
         return JsonResponse({'status': '-1', 'message': 'request is not valid.'})
 
@@ -177,6 +199,76 @@ def project_reject(request, benefactor_name, project_id):
             return JsonResponse({'status': '0', 'message': 'request was successfully rejected.'})
     else:
         return JsonResponse({'status': '-1', 'message': 'request is not valid.'})
+
+
+@csrf_exempt
+def view_schedule_benefactor(request, benefactor_name):
+    if request.method == "GET":
+        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        if BenefactorProfile.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'benefactor does not exist.'})
+
+        return JsonResponse({'status': '0', 'list': benefactor.get_schedule_list()})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def add_schedule_benefactor(request, benefactor_name):
+    if request.method == 'POST':
+        p = json.loads(request.body)
+        schedule_times = p['schedule_times']
+
+        benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
+        if BenefactorProfile.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'benefactor does not exist.'})
+
+        benefactor.schedule.clear()
+        schedule_times = json.loads(schedule_times)
+        for entry in schedule_times:
+            schedule = Schedule(day=entry['day'], time=entry['time'])
+            benefactor.schedule.add(schedule)
+        benefactor.save()
+        return JsonResponse({'status': '0', 'message': 'schedule added successfully.'})
+
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+
+
+@csrf_exempt
+def view_schedule_project(request, project_id):
+    if request.method == "GET":
+        project = NonFinancialProject.objects.get(id=project_id)
+        if NonFinancialProject.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'project does not exist.'})
+
+        return JsonResponse({'status': '0', 'list': project.get_schedule_list()})
+
+    else:
+        return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
+
+
+@csrf_exempt
+def add_schedule_project(request, project_id):
+    if request.method == 'POST':
+        p = json.loads(request.body)
+        schedule_times = p['schedule_times']
+
+        project = NonFinancialProject.objects.get(id=project_id)
+        if NonFinancialProject.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'project does not exist.'})
+
+        project.schedule.clear()
+        schedule_times = json.loads(schedule_times)
+        for entry in schedule_times:
+            schedule = Schedule(day=entry['day'], time=entry['time'])
+            project.schedule.add(schedule)
+        project.save()
+        return JsonResponse({'status': '0', 'message': 'schedule added successfully.'})
+
+    else:
+        return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
 
 
 @csrf_exempt
