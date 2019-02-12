@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from apps.accounts import urls as account_urls
 from apps.project import urls as project_urls
 from apps.search import urls as search_urls
+from apps.admin import urls as admin_urls
 
 # from django.contrib import admin
 
@@ -25,4 +26,5 @@ urlpatterns = [
     url(r'^accounts/', include(account_urls)),
     url(r'^projects/', include(project_urls)),
     url(r'^search/', include(search_urls)),
+    url(r'^admin/', include(admin_urls))
 ]
