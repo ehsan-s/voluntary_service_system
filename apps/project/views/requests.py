@@ -61,16 +61,27 @@ def org_participation_request(request, benefactor_name, project_id):
         project = NonFinancialProject.objects.get(id=project_id)
 
         if project.need in benefactor.skills:
-            request = Request(benefactor=benefactor_name, project=project_id, requester='organization',
-                              request_desc=description)
-            request.save()
-            organization = project.organization.profile.user.username
-            Log(message='send request from organization {} to benefactor {} for project {}'.format(organization,
-                                                                                                   benefactor_name,
-                                                                                                   project_id)).save()
-            return JsonResponse({'status': '0', 'message': 'request has been successfully submitted.'})
+            project_schedule = project.schedule.all()
+            benefactor_schedule = benefactor.schedule.all()
+            flag = 0
+            for schedule in project_schedule:
+                if schedule not in benefactor_schedule:
+                    flag = 1
+
+            if flag == 1:
+                return JsonResponse({'status': '-1', 'message': 'Schedule does not match.'})
+
+            else:
+                request = Request(benefactor=benefactor_name, project=project_id, requester='organization',
+                                  request_desc=description)
+                request.save()
+                organization = project.organization.profile.user.username
+                Log(message='send request from organization {} to benefactor {} for project {}'.format(organization,
+                                                                                                       benefactor_name,
+                                                                                                       project_id)).save()
+                return JsonResponse({'status': '0', 'message': 'request has been successfully submitted.'})
         else:
-            return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need'})
+            return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need.'})
     else:
         return JsonResponse({'status': '-1', 'message': 'request is not valid.'})
 
@@ -85,16 +96,27 @@ def benefactor_participation_request(request, benefactor_name, project_id):
         project = NonFinancialProject.objects.get(id=project_id)
 
         if project.need in benefactor.skills:
-            request = Request(benefactor=benefactor_name, project=project_id, requester='benefactor',
-                              request_desc=description)
-            request.save()
-            organization = project.organization.profile.user.username
-            Log(message='send request from benefactor {} to organization {} for project {}'.format(benefactor_name,
-                                                                                                   organization,
-                                                                                                   project_id)).save()
-            return JsonResponse({'status': '0', 'message': 'Request has been successfully submitted.'})
+            project_schedule = project.schedule.all()
+            benefactor_schedule = benefactor.schedule.all()
+            flag = 0
+            for schedule in project_schedule:
+                if schedule not in benefactor_schedule:
+                    flag = 1
+
+            if flag == 1:
+                return JsonResponse({'status': '-1', 'message': 'Schedule does not match.'})
+
+            else:
+                request = Request(benefactor=benefactor_name, project=project_id, requester='benefactor',
+                                  request_desc=description)
+                request.save()
+                organization = project.organization.profile.user.username
+                Log(message='send request from benefactor {} to organization {} for project {}'.format(benefactor_name,
+                                                                                                       organization,
+                                                                                                       project_id)).save()
+                return JsonResponse({'status': '0', 'message': 'Request has been successfully submitted.'})
         else:
-            return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need'})
+            return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need.'})
     else:
         return JsonResponse({'status': '-1', 'message': 'request is not valid.'})
 

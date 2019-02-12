@@ -30,6 +30,12 @@ class Schedule(models.Model):
 
     start_time = models.IntegerField(validators=[validate_time], verbose_name=_('times in day'))
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.day == other.day and self.start_time == other.start_time
+        else:
+            return False
+
     def as_json(self):
         return dict(day=self.day, time=self.start_time)
 
