@@ -2,6 +2,7 @@ import json
 from apps.project.models import *
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from apps.admin.models import Log
 
 
 @csrf_exempt
@@ -10,25 +11,24 @@ def add_skill(request):
         p = json.loads(request.body)
         category = p['category']
         name = p['name']
-
         try:
             existing_skill_category = SkillCategory.objects.get(category=category)
-        except SkillCategory.DoesNotExist:
+        except SkillCategory.DoseNotExits:
             skill_category = SkillCategory(category=category)
             skill_category.save()
             benefactor_skill = BenefactorSkill(name=name, category=skill_category)
             benefactor_skill.save()
+            Log(message='Skill with category {} and name {} added by admin'.format(category, name)).save()
             return JsonResponse({'status': '0', 'message': 'skill has been successfully added.'})
 
         try:
             BenefactorSkill.objects.get(name=name, category__category=category)
-        except BenefactorSkill.DoesNotExist:
+            return JsonResponse({'status': '-1', 'error': 'duplicate skill'})
+        except BenefactorSkill.DoesNotExits:
             benefactor_skill = BenefactorSkill(name=name, category=existing_skill_category)
             benefactor_skill.save()
-
-        finally:
-            return JsonResponse({'status': '-1', 'error': 'duplicate skill'})
-
+            Log(message='Skill with category {} and name {} added by admin'.format(category, name)).save()
+            return JsonResponse({'status': '0', 'message': 'skill has been successfully added.'})
     else:
         return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
 
@@ -43,6 +43,7 @@ def verify_user(request, user_name):
 
         user.status = 'V'
         user.save()
+        Log(message='User {} is verified by admin'.format(user_name)).save()
         return JsonResponse({'status': '0', 'message': 'user has been successfully verified.'})
 
     else:
@@ -58,6 +59,7 @@ def remove_user(request, user_name):
             return JsonResponse({'status': '-1', 'error': 'user does not exist.'})
 
         user.delete()
+        Log(message='User {} is deleted by admin'.format(user_name)).save()
         return JsonResponse({'status': '0', 'message': 'user has been successfully removed.'})
 
     else:
@@ -78,6 +80,7 @@ def remove_feedback(request, feedback_id):
             return JsonResponse({'status': '-1', 'error': 'feedback does not exist.'})
 
         feedback.delete()
+        Log(message='Feedback with id {} is removed by admin'.format(feedback_id)).save()
         return JsonResponse({'status': '0', 'message': 'feedback has been successfully removed.'})
 
     else:

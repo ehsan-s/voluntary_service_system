@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ValidationError
 
 
 def validate_time(value):
@@ -50,6 +51,9 @@ class BenefactorSkill(models.Model):
 # a_cat = SkillCategory(category='معلم')
 # a_cat.save()
 # a_skl = BenefactorSkill(category=a_cat, name='فیزیک')
+
+class AdminProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_profile')
 
 
 class UserProfile(models.Model):

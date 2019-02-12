@@ -5,7 +5,6 @@ from apps.accounts.models import *
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
 
 
 class Project(models.Model):
