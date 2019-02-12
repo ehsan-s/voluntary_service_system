@@ -3,6 +3,7 @@ from apps.accounts.forms import UserProfileEditForm, BenefactorProfileEditForm
 from django.contrib.auth.forms import PasswordChangeForm
 from apps.accounts.models import (User, UserProfile, BenefactorProfile, OrganizationProfile,
                                   SkillCategory, BenefactorSkill)
+from apps.admin.models import Log
 from django.http import JsonResponse
 import json
 
@@ -15,6 +16,7 @@ def edit_password(request, username):
         user_form = PasswordChangeForm(data=p, user=user)
         if user_form.is_valid():
             user_form.save()
+            Log(message='User {} changed password'.format(username)).save()
             return JsonResponse({'status': '0', 'message': 'Successful changing password'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(user_form.errors.items())})
@@ -30,6 +32,7 @@ def edit_org(request, username):
         user_profile_form = UserProfileEditForm(p, instance=user_profile)
         if user_profile_form.is_valid():
             user_profile_form.save()
+            Log(message='Organization {} edited profile'.format(username)).save()
             return JsonResponse({'status': '0', 'message': 'Successful edit profile'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(user_profile_form.errors.items())})
@@ -77,6 +80,7 @@ def edit_benefactor(request, username):
                 benefactor_profile.skills.clear()
                 for skill in benefactor_skills:
                     benefactor_profile.skills.add(skill)
+                Log(message='Benefactor {} edited profile'.format(username)).save()
                 return JsonResponse({'status': '0', 'message': 'Successful edit profile'})
             else:
                 return JsonResponse({'status': '-1', 'message': dict(benefactor_profile_form.errors.items())})
