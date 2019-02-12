@@ -37,9 +37,10 @@ def benefactor_nonfinancial_search(request):
     if request.method == "POST":
         p = json.loads(request.body)
         print(p)
-        if p['gender'] is None:
+        if p['gender'] is None or p['gender'] == '':
             p['gender'] = 'اهمیتی ندارد'
         benefactor_search_form = benefactorNonFinancialForm(p)
+        print(benefactor_search_form.errors)
         if benefactor_search_form.is_valid():
             projects = NonFinancialProject.objects.filter(status='not_started')
             print(projects)
@@ -48,7 +49,7 @@ def benefactor_nonfinancial_search(request):
                 print(project.status)
             if benefactor_search_form.cleaned_data['city'] is not None and benefactor_search_form.cleaned_data['city'] != '':
                 projects = projects.filter(location=benefactor_search_form.cleaned_data['city'])
-            if benefactor_search_form.cleaned_data['gender'] is not 'اهمیتی ندارد' and benefactor_search_form.cleaned_data['gender'] != '':
+            if benefactor_search_form.cleaned_data['gender'] != 'اهمیتی ندارد' and benefactor_search_form.cleaned_data['gender'] != '':
                 projects = projects.filter(gender=benefactor_search_form.cleaned_data['gender'])
             if benefactor_search_form.cleaned_data['org_username'] is not None and benefactor_search_form.cleaned_data['org_username'] != '':
                 projects = projects.filter(organization__profile__user__username=benefactor_search_form.cleaned_data['org_username'])
