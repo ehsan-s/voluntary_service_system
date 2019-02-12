@@ -46,9 +46,15 @@ class NonFinancialProject(Project):
     location = models.CharField(max_length=100, null=False, blank=False, verbose_name=_('location'))
 
     def as_json(self):
-        return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
+        if self.benefactor is not None:
+            return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
                     id=self.id, benefactor=self.benefactor.as_json(),
-                    need_=dict(name=self.need.name, category=self.need.category),
+                    need_=dict(name=self.need.name, category=self.need.category.category),
+                    gender=self.gender, age=self.age, location=self.location)
+        else:
+            return dict(organization=self.organization.as_json(), name=self.name, status=self.status,
+                    id=self.id, benefactor=None,
+                    need_=dict(name=self.need.name, category=self.need.category.category),
                     gender=self.gender, age=self.age, location=self.location)
 
 
