@@ -50,6 +50,7 @@ class NonFinancialProject(Project):
         schedule_list = []
         for schedule in self.schedule.all():
             schedule_list.append(schedule.as_json())
+        return schedule_list
 
     def as_json(self):
         if self.benefactor is not None:

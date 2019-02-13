@@ -230,7 +230,6 @@ def view_schedule_benefactor(request, benefactor_name):
             benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
         except BenefactorProfile.DoesNotExist:
             return JsonResponse({'status': '-1', 'error': 'benefactor does not exist.'})
-
         return JsonResponse({'status': '0', 'list': benefactor.get_schedule_list()})
 
     else:
@@ -252,8 +251,10 @@ def add_schedule_benefactor(request, benefactor_name):
         schedule_times = json.loads(schedule_times)
         for entry in schedule_times:
             schedule = Schedule(day=entry['day'], time=entry['time'])
+            schedule.save()
             benefactor.schedule.add(schedule)
         benefactor.save()
+        print(benefactor.schedule.all())
         return JsonResponse({'status': '0', 'message': 'schedule added successfully.'})
 
     else:

@@ -11,12 +11,14 @@ import json
 def send_feedback(request):
     if request.method == "POST":
         p = json.loads(request.body)
+        print(p)
         feedback_form = FeedbackForm(p)
         non_financial_project = NonFinancialProject.objects.get(pk=p['id'])
         if feedback_form.is_valid():
             feedback = feedback_form.save(commit=False)
             feedback.project = non_financial_project
             feedback.save()
+            print(feedback.feeder)
             org = feedback.project.organization.profile.user.username
             benefactor = feedback.project.benefactor.profile.user.username
             project_id = feedback.project.id
