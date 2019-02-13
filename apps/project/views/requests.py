@@ -140,8 +140,12 @@ def benefactor_pay(request, benefactor_name, project_id):
         if project.money_donated is None:
             project.money_donated = '0'
         project.money_donated = str(float(project.money_donated) + float(donation))
+        if project.money_donated == project.money_needed:
+            project.status = 'done'
+            Log(message='money needed for project with id {} is gathered completely'.format(project_id)).save()
         if benefactor not in project.benefactors.all():
             project.benefactors.add(benefactor)
+        project.save()
         organization = project.organization.profile.user.username
         Log(message='{} paid by benefactor {} for project with id {} of organization {}'.format(str(donation),
                                                                                                 benefactor_name,
@@ -286,22 +290,3 @@ def add_schedule_project(request, project_id):
 
     else:
         return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
-
-
-@csrf_exempt
-def end_project(request, project_id):
-    if request.method == 'POST':
-        try:
-            project = Project.objects.get(id=project_id)
-        except Project.DoesNotExist:
-            return JsonResponse({'status': '-1', 'message': 'project does not exist'})
-        finally:
-            project.status = 'done'
-            project.save()
-            benefactor_name = project.benefactor.profile.user.username
-            organization = project.organization.profile.user.username
-            Log(message='project with id {} of organization is done benefactor {}'.format(benefactor_name, project_id,
-                                                                                          organization)).save()
-            return JsonResponse({'status': '0', 'message': 'project is done.'})
-    else:
-        return JsonResponse({'status': '-1', 'message': 'request is not valid.'})
