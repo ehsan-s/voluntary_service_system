@@ -22,7 +22,7 @@ def org_request(request, org_name):
                                   .annotate(category=F('project__need__category__category'),
                                             name=F('project__need__name'), location=F('project__location'),
                                             username=F('benefactor__profile__user__username'))
-                                  .values('username', 'category', 'name', 'location', 'request_desc', 'answer_desc', 'status'))
+                                  .values('username', 'category', 'name', 'location', 'request_desc', 'answer_desc', 'status', 'id'))
         return JsonResponse({'status': '0', 'requests': requests_list})
     else:
         return JsonResponse({'status': '-1', 'message': 'this request method is not supported'})
@@ -45,7 +45,7 @@ def benefactor_request(request, benefactor_name):
                                             name=F('project__need__name'), location=F('project__location'),
                                             username=F('project__organization__profile__user__username'))
                                   .values('username', 'category', 'name', 'location', 'request_desc', 'answer_desc',
-                                          'status'))
+                                          'status', 'id'))
         return JsonResponse({'status': '0', 'requests': requests_list})
     else:
         return JsonResponse({'status': '-1', 'message': 'this request method is not supported'})
