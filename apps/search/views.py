@@ -24,7 +24,7 @@ def organization_search(request):
                 benefactors = benefactors.filter(profile__user__username=org_search_form.cleaned_data['benefactor_username'])
             data = []
             for ben in benefactors:
-                data.append(ben.as_jaon())
+                data.append(ben.as_json())
             return JsonResponse({'status': '0', 'search': data})
         else:
             return JsonResponse({'status': '-1', 'message': dict(org_search_form.errors.items())})
@@ -71,8 +71,9 @@ def benefactor_nonfinancial_search(request):
 def benefactor_financial_search(request):
     if request.method == "GET":
         data = []
-        for project in FinancialProject.objects.filter(status='in_progress'):
-            data.append(project.as_jaon())
+        print(FinancialProject.objects.all())
+        for project in FinancialProject.objects.filter(status='not_started'):
+            data.append(project.as_json())
         return JsonResponse({'status': '0', 'search': data})
     else:
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})

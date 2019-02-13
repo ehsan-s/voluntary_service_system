@@ -95,7 +95,7 @@ def benefactor_participation_request(request, benefactor_name, project_id):
         benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
         project = NonFinancialProject.objects.get(id=project_id)
 
-        if project.need in benefactor.skills:
+        if project.need in benefactor.skills.all():
             project_schedule = project.schedule.all()
             benefactor_schedule = benefactor.schedule.all()
             flag = 0
@@ -107,7 +107,7 @@ def benefactor_participation_request(request, benefactor_name, project_id):
                 return JsonResponse({'status': '-1', 'message': 'Schedule does not match.'})
 
             else:
-                request = Request(benefactor=benefactor_name, project=project_id, requester='benefactor',
+                request = Request(benefactor=benefactor, project=project, requester='benefactor',
                                   request_desc=description)
                 request.save()
                 organization = project.organization.profile.user.username
@@ -137,8 +137,10 @@ def benefactor_pay(request, benefactor_name, project_id):
             return JsonResponse({'status': '-1', 'message': 'financial project does not exist'})
 
         donation = p['amount']
-        project.money_donated += donation
-        if benefactor not in project.benefactors:
+        if project.money_donated is None:
+            project.money_donated = '0'
+        project.money_donated = str(float(project.money_donated) + float(donation))
+        if benefactor not in project.benefactors.all():
             project.benefactors.add(benefactor)
         organization = project.organization.profile.user.username
         Log(message='{} paid by benefactor {} for project with id {} of organization {}'.format(str(donation),
@@ -156,7 +158,6 @@ def project_accept(request, benefactor_name, project_id):
     if request.method == 'POST':
         benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
         project = NonFinancialProject.objects.get(id=project_id)
-
         if project.benefactor is None:
             project.benefactor = benefactor
             project.save()
