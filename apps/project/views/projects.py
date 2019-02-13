@@ -100,7 +100,7 @@ def benefactor_project(request, benefactor_name):
             projects_list = list(FinancialProject.objects\
                 .filter(benefactors__profile__user__username__exact=benefactor_name, status=status)\
                 .annotate(username=F('organization__profile__user__username'))\
-                .values('username', 'name', 'deadline', 'money_needed', 'money_donated'))
+                .values('username', 'name', 'deadline', 'money_needed', 'money_donated', 'id'))
         elif type == 'non_financial':
             projects_list = list(NonFinancialProject.objects\
                 .filter(benefactor__profile__user__username=benefactor_name, status=status)\
