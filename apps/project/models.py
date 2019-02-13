@@ -22,7 +22,7 @@ class FinancialProject(Project):
     benefactors = models.ManyToManyField(BenefactorProfile)
     deadline = models.DateTimeField(null=True, blank=True)
     money_needed = models.IntegerField(null=False, verbose_name=_('money needed‌'))
-    money_donated = models.IntegerField(null=True, verbose_name=_('money donated‌'))
+    money_donated = models.IntegerField(default=0, verbose_name=_('money donated‌'))
 
     def as_json(self):
         benefactors_list = []
