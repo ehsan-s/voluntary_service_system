@@ -178,6 +178,7 @@ def project_accept(request, benefactor_name, project_id):
                 request.status = 'accepted'
                 request.answer_desc = reason
                 request.project.status = 'in_progress'
+                request.project.save()
                 request.save()
                 organization = request.project.organization.profile.user.username
                 if request.requester == 'benefactor':
