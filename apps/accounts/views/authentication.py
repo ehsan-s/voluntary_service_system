@@ -110,26 +110,26 @@ def login(request):
         login_form = AuthenticationForm(data=p)
         if login_form.is_valid():
             user = login_form.get_user()
-            # try:
-            #     AdminProfile.objects.get(user__username=user.username)
-            #     auth_login(request, user)
-            #     Log(message='Admin {} get login'.format(user.username)).save()
-            #     return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'admin'})
-            # except AdminProfile.DoesNotExists:
-            user_profile = UserProfile.objects.get(user__username=user.username)
-            user_profile.generate_token()
-            if user_profile.status != 'C':
-                return JsonResponse({'status': '-1', 'message': 'User not activated'})
+            try:
+                AdminProfile.objects.get(user__username=user.username)
+                auth_login(request, user)
+                Log(message='Admin {} get login'.format(user.username)).save()
+                return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'admin'})
+            except AdminProfile.DoesNotExist:
+                user_profile = UserProfile.objects.get(user__username=user.username)
+                user_profile.generate_token()
+                if user_profile.status != 'C':
+                    return JsonResponse({'status': '-1', 'message': 'User not activated'})
 
-            auth_login(request, user)
-            if BenefactorProfile.objects.filter(profile__user__username=user.username).exists():
-                log = Log(message='Benefactor {} get login'.format(user.username))
-                log.save()
-                return JsonResponse({'status': '0', 'token': user_profile.token, 'message': 'Successful Login', 'user': 'benefactor'})
-            else:
-                log = Log(message='Organization {} get login'.format(user.username))
-                log.save()
-                return JsonResponse({'status': '0', 'token': user_profile.token, 'message': 'Successful Login', 'user': 'organization'})
+                auth_login(request, user)
+                if BenefactorProfile.objects.filter(profile__user__username=user.username).exists():
+                    log = Log(message='Benefactor {} get login'.format(user.username))
+                    log.save()
+                    return JsonResponse({'status': '0', 'token': user_profile.token, 'message': 'Successful Login', 'user': 'benefactor'})
+                else:
+                    log = Log(message='Organization {} get login'.format(user.username))
+                    log.save()
+                    return JsonResponse({'status': '0', 'token': user_profile.token, 'message': 'Successful Login', 'user': 'organization'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(login_form.errors.items())})
     else:
