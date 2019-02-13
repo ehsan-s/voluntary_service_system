@@ -39,17 +39,13 @@ def organization_search(request):
 def benefactor_nonfinancial_search(request):
     if request.method == "POST":
         p = json.loads(request.body)
-        print(p)
+        print('P: ', p)
         if p['gender'] is None or p['gender'] == '':
             p['gender'] = 'اهمیتی ندارد'
         benefactor_search_form = benefactorNonFinancialForm(p)
-        print(benefactor_search_form.errors)
         if benefactor_search_form.is_valid():
             projects = NonFinancialProject.objects.filter(status='not_started')
             print(projects)
-            print(NonFinancialProject.objects.all())
-            for project in NonFinancialProject.objects.all():
-                print(project.status)
             if benefactor_search_form.cleaned_data['city'] is not None and benefactor_search_form.cleaned_data['city'] != '':
                 projects = projects.filter(location=benefactor_search_form.cleaned_data['city'])
             if benefactor_search_form.cleaned_data['gender'] != 'اهمیتی ندارد' and benefactor_search_form.cleaned_data['gender'] != '':
@@ -61,11 +57,11 @@ def benefactor_nonfinancial_search(request):
             skills = p['skills']
             if skills is not None and len(skills) != 0:
                 projects = filter_projects_by_skill(projects, skills)
-
+            print(projects)
             data = []
             for project in projects:
                 data.append(project.as_json())
-            print(data)
+            print('data: ', data)
             return JsonResponse({'status': '0', 'search': data})
         else:
             return JsonResponse({'status': '-1', 'message': dict(benefactor_search_form.errors.items())})
