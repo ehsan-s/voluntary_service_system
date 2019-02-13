@@ -44,10 +44,10 @@ def verify_user(request, user_name):
         except UserProfile.DoesNotExist:
             return JsonResponse({'status': '-1', 'error': 'user does not exist.'})
 
-        user.status = 'V'
+        # user.status = 'V'
+        user.status = 'C'
         user.save()
-        print("verify")
-        send_email(request, user.user)
+        #send_email(request, user.user)
         Log(message='User {} is verified by admin'.format(user_name)).save()
         return JsonResponse({'status': '0', 'message': 'user has been successfully verified.'})
 

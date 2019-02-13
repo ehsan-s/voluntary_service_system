@@ -157,13 +157,12 @@ def logout(request):
 
 @csrf_exempt
 def activate(request, uidb64, token):
-    if request.method == "POST":
+    if request.method == "GET":
         try:
             uid = force_text(urlsafe_base64_decode(uidb64))
             user = User.objects.get(pk=uid)
         except(TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
-        print(uid, user.email)
         if user is not None and account_activation_token.check_token(user, token):
             user.is_active = True
             user.user_profile.status = 'C'
