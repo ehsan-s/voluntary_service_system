@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ValidationError
+import uuid
 
 
 def validate_time(value):
@@ -58,6 +59,7 @@ class AdminProfile(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user_profile')
+    token = models.CharField(max_length=200, default='token', null=False, blank=False, unique=True, verbose_name=_('token'))
     phone_number = models.CharField(max_length=20, null=False, blank=False, verbose_name=_('Mobile number‌'))
     tel_number = models.CharField(max_length=20, null=False, blank=False, verbose_name=_('Telephone number‌'))
     address = models.CharField(max_length=200, null=False, blank=False, verbose_name=_('Address‌'))
@@ -67,8 +69,18 @@ class UserProfile(models.Model):
     STATUS_CHOICES = (
         ('P', 'pending'),
         ('V', 'verified'),
+        ('C', 'confirmed')
     )
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='V', verbose_name=_('User status'))
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P', verbose_name=_('User status'))
+
+    def generate_token(self):
+        my_uuid = str(uuid.uuid4())
+        while True:
+            my_uuid = str(uuid.uuid4())
+            if not UserProfile.objects.filter(token=my_uuid).exists():
+                break
+        self.token = my_uuid
+        self.save()
 
 
 class OrganizationProfile(models.Model):

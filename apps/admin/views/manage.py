@@ -3,7 +3,10 @@ from apps.project.models import *
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from apps.admin.models import Log
-
+from django.core.mail import send_mail
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from apps.accounts.tokens import account_activation_token
 
 @csrf_exempt
 def add_skill(request):
@@ -43,11 +46,25 @@ def verify_user(request, user_name):
 
         user.status = 'V'
         user.save()
+        print("verify")
+        send_email(request, user.user)
         Log(message='User {} is verified by admin'.format(user_name)).save()
         return JsonResponse({'status': '0', 'message': 'user has been successfully verified.'})
 
     else:
         return JsonResponse({'status': '-1', 'error': 'request is not valid.'})
+
+
+def send_email(request, user):
+    token = account_activation_token.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    email_text = 'http://127.0.0.1:8000/accounts/activate/' + uid.decode("utf-8") + '/' + str(token) + '/'
+    send_mail(subject='Activate Your Account',
+              message=email_text,
+              from_email='ehsan7604@gmail.com',
+              recipient_list=[user.email],
+              fail_silently=False,
+              html_message=None)
 
 
 @csrf_exempt

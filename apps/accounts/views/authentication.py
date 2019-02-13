@@ -9,6 +9,11 @@ from apps.accounts.models import SkillCategory, BenefactorSkill, BenefactorProfi
 from django.http import JsonResponse
 from apps.admin.models import Log
 import json
+from django.shortcuts import redirect, render
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
+from apps.accounts.tokens import account_activation_token
+from django.contrib.auth.models import User
 
 
 @csrf_exempt
@@ -49,6 +54,7 @@ def register_benefactor(request):
                     user = user_form.save()
                     user_profile = user_profile_form.save(commit=False)
                     user_profile.user = user
+                    user_profile.generate_token()
                     user_profile.save()
                     benefactor = benefactor_form.save(commit=False)
                     benefactor.profile = user_profile
@@ -80,6 +86,7 @@ def register_organization(request):
                     user = user_form.save()
                     user_profile = user_profile_form.save(commit=False)
                     user_profile.user = user
+                    user_profile.generate_token()
                     user_profile.save()
                     org = org_form.save(commit=False)
                     org.profile = user_profile
@@ -110,17 +117,19 @@ def login(request):
             #     return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'admin'})
             # except AdminProfile.DoesNotExists:
             user_profile = UserProfile.objects.get(user__username=user.username)
-            if user_profile.status == 'P':
-                return JsonResponse({'status': '-1', 'message': 'User not verified'})
+            user_profile.generate_token()
+            if user_profile.status != 'C':
+                return JsonResponse({'status': '-1', 'message': 'User not activated'})
+
             auth_login(request, user)
             if BenefactorProfile.objects.filter(profile__user__username=user.username).exists():
                 log = Log(message='Benefactor {} get login'.format(user.username))
                 log.save()
-                return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'benefactor'})
+                return JsonResponse({'status': '0', 'token': user_profile.token, 'message': 'Successful Login', 'user': 'benefactor'})
             else:
                 log = Log(message='Organization {} get login'.format(user.username))
                 log.save()
-                return JsonResponse({'status': '0', 'message': 'Successful Login', 'user': 'organization'})
+                return JsonResponse({'status': '0', 'token': user_profile.token, 'message': 'Successful Login', 'user': 'organization'})
         else:
             return JsonResponse({'status': '-1', 'message': dict(login_form.errors.items())})
     else:
@@ -145,3 +154,23 @@ def logout(request):
             return JsonResponse({'status': '0', 'message': 'Successful Logout', 'user': 'organization'})
     else:
         return JsonResponse({'status': '-1', 'message': 'not POST request'})
+
+@csrf_exempt
+def activate(request, uidb64, token):
+    if request.method == "POST":
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        print(uid, user.email)
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.user_profile.status = 'C'
+            user.save()
+            user.user_profile.save()
+            return JsonResponse({'status': '0', 'message': 'User activated.'})
+        else:
+            return JsonResponse({'status': '-1', 'message': 'wrong token'})
+    else:
+        return JsonResponse({'status': '-1', 'message': 'just POST request'})

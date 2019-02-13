@@ -8,6 +8,9 @@ urlpatterns = [
     url(r'^login/$', views.login, name='login'),
     url(r'^logout/$', views.logout, name='logout'),
 
+    url(r'^activate/(?P<uidb64>.+)/(?P<token>.+)/$', views.activate, name='activate'),
+    # url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+    #     views.activate, name='activate'),
     url(r'^organization/profile/view/(?P<username>.+)/$', views.org_views_org, name='view_org_profile'),
     url(r'^benefactor/profile/view/(?P<username>.+)/$', views.benefactor_views_benefactor,
         name='view_benefactor_profile'),

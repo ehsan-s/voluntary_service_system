@@ -2,7 +2,7 @@ from django.conf.urls import url
 from apps.admin import views
 from apps.accounts import views as vu
 
-app_name = "accounts"
+app_name = "admin"
 urlpatterns = [
     url(r'^view/benefactors/$', views.view_all_benefactors, name='view_all_benefactors'),
     url(r'^view/pending_benefactors/$', views.view_pending_benefactors, name='view_pending_benefactors'),

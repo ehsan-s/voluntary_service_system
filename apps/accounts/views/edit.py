@@ -13,6 +13,8 @@ def edit_password(request, username):
     if request.method == "POST":
         p = json.loads(request.body)
         user = User.objects.get(username=username)
+        if request.META['HTTP_X_TOKEN'] != user.user_profile.token:
+            return JsonResponse({'status': '-1', 'message': 'no/wrong token'})
         user_form = PasswordChangeForm(data=p, user=user)
         if user_form.is_valid():
             user_form.save()
@@ -29,6 +31,8 @@ def edit_org(request, username):
     if request.method == "POST":
         p = json.loads(request.body)
         user_profile = UserProfile.objects.get(user__username=username)
+        if request.META['HTTP_X_TOKEN'] != user_profile.token:
+            return JsonResponse({'status': '-1', 'message': 'no/wrong token'})
         user_profile_form = UserProfileEditForm(p, instance=user_profile)
         if user_profile_form.is_valid():
             user_profile_form.save()
@@ -46,6 +50,8 @@ def edit_benefactor(request, username):
     if request.method == "POST":
         p = json.loads(request.body)
         user_profile = UserProfile.objects.get(user__username=username)
+        if request.META['HTTP_X_TOKEN'] != user_profile.token:
+            return JsonResponse({'status': '-1', 'message': 'no/wrong token'})
         benefactor_profile = BenefactorProfile.objects.get(profile__user__username=username)
         user_profile_form = UserProfileEditForm(p, instance=user_profile)
         benefactor_profile_form = BenefactorProfileEditForm(p, instance=benefactor_profile)
