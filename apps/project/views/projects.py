@@ -13,6 +13,8 @@ def add_financial_project(request, org_name):
     if request.method == 'POST':
         p = json.loads(request.body)
         organization_profile = OrganizationProfile.objects.get(profile__user__username=org_name)
+        if request.META['HTTP_X_TOKEN'] != organization_profile.profile.token:
+            return JsonResponse({'status': '-1', 'message': 'no/wrong token'})
         financial_project_form = FinancialProjectForm(p)
         if financial_project_form.is_valid():
             financial_project = financial_project_form.save(commit=False)
@@ -31,6 +33,8 @@ def add_non_financial_project(request, org_name):
     if request.method == "POST":
         p = json.loads(request.body)
         organization_profile = OrganizationProfile.objects.get(profile__user__username=org_name)
+        if request.META['HTTP_X_TOKEN'] != organization_profile.profile.token:
+            return JsonResponse({'status': '-1', 'message': 'no/wrong token'})
         non_financial_project_form = NonFinancialProjectForm(p)
         skill = p['need']
         skill = json.loads(skill)
@@ -64,6 +68,7 @@ def add_non_financial_project(request, org_name):
             return JsonResponse({'status': '-1', 'message': dict(non_financial_project_form.errors.items())})
     else:
         return JsonResponse({'status': '-1', 'message': 'just POST request'})
+
 
 #  http://127.0.0.1:8000/projects/organization/org/?type=non_financial&status=in_progress
 @csrf_exempt

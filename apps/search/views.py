@@ -55,6 +55,7 @@ def benefactor_nonfinancial_search(request):
                 projects = projects.filter(organization__profile__user__username=benefactor_search_form.cleaned_data['org_username'])
             if benefactor_search_form.cleaned_data['project_name'] is not None and benefactor_search_form.cleaned_data['project_name'] != '':
                 projects = projects.filter(name=benefactor_search_form.cleaned_data['project_name'])
+
             data = []
             print(projects)
             for project in projects:
@@ -78,3 +79,15 @@ def benefactor_financial_search(request):
     else:
         return JsonResponse({'status': '-1', 'error': 'this request method is not supported'})
 
+
+def filter_benefactors_by_skill(benefactors, skills):
+    res = []
+    for ben in benefactors:
+        contains = False
+        for ben_skill in ben.get_all_skills():
+            for skill in skills:
+                if ben_skill == skill:
+                    contains = True
+        if contains:
+            res.append(ben)
+    return res
