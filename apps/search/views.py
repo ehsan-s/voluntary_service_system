@@ -43,11 +43,8 @@ def benefactor_nonfinancial_search(request):
         if p['gender'] is None or p['gender'] == '':
             p['gender'] = 'اهمیتی ندارد'
         benefactor_search_form = benefactorNonFinancialForm(p)
-        print(benefactor_search_form.errors)
         if benefactor_search_form.is_valid():
             projects = NonFinancialProject.objects.filter(status='not_started')
-            print(projects)
-            print(NonFinancialProject.objects.all())
             for project in NonFinancialProject.objects.all():
                 print(project.status)
             if benefactor_search_form.cleaned_data['city'] is not None and benefactor_search_form.cleaned_data['city'] != '':
@@ -64,8 +61,8 @@ def benefactor_nonfinancial_search(request):
 
             data = []
             for project in projects:
+                print(project.id)
                 data.append(project.as_json())
-            print(data)
             return JsonResponse({'status': '0', 'search': data})
         else:
             return JsonResponse({'status': '-1', 'message': dict(benefactor_search_form.errors.items())})
@@ -78,7 +75,7 @@ def benefactor_financial_search(request):
     if request.method == "GET":
         data = []
         print(FinancialProject.objects.all())
-        for project in FinancialProject.objects.filter(status='not_started'):
+        for project in FinancialProject.objects.filter(status='in_progress'):
             data.append(project.as_json())
         return JsonResponse({'status': '0', 'search': data})
     else:

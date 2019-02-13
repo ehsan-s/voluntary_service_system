@@ -71,7 +71,7 @@ class UserProfile(models.Model):
         ('V', 'verified'),
         ('C', 'confirmed')
     )
-    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='P', verbose_name=_('User status'))
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='C', verbose_name=_('User status'))
 
     def generate_token(self):
         my_uuid = str(uuid.uuid4())

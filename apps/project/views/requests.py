@@ -18,7 +18,7 @@ def org_request(request, org_name):
             requester = 'benefactor'
         if requester is not None:
             requests_list = list(Request.objects\
-                .filter(project__organization__profile__user__username=org_name, requester=requester)
+                .filter(project__organization__profile__user__username=org_name, requester=requester, project__status='not_started')
                                   .annotate(category=F('project__need__category__category'),
                                             name=F('project__need__name'), location=F('project__location'),
                                             username=F('benefactor__profile__user__username'))
@@ -40,7 +40,7 @@ def benefactor_request(request, benefactor_name):
             requester = 'benefactor'
         if requester is not None:
             requests_list = list(Request.objects\
-                .filter(benefactor__profile__user__username=benefactor_name, requester=requester)
+                .filter(benefactor__profile__user__username=benefactor_name, requester=requester, project__status="not_started")
                                   .annotate(category=F('project__need__category__category'),
                                             name=F('project__need__name'), location=F('project__location'),
                                             username=F('project__organization__profile__user__username'))
@@ -112,8 +112,8 @@ def benefactor_participation_request(request, benefactor_name, project_id):
                 request.save()
                 organization = project.organization.profile.user.username
                 Log(message='send request from benefactor {} to organization {} for project {}'.format(benefactor_name,
-                                                                                                       organization,
-                                                                                                       project_id)).save()
+                                                                                                           organization,
+                                                                                                           project_id)).save()
                 return JsonResponse({'status': '0', 'message': 'Request has been successfully submitted.'})
         else:
             return JsonResponse({'status': '-1', 'message': 'Benefactor does not fit the need.'})
@@ -139,8 +139,8 @@ def benefactor_pay(request, benefactor_name, project_id):
         donation = p['amount']
         if project.money_donated is None:
             project.money_donated = '0'
-        project.money_donated = str(float(project.money_donated) + float(donation))
-        if project.money_donated == project.money_needed:
+        project.money_donated = str(int(project.money_donated) + int(donation))
+        if int(project.money_donated) == int(project.money_needed):
             project.status = 'done'
             Log(message='money needed for project with id {} is gathered completely'.format(project_id)).save()
         if benefactor not in project.benefactors.all():
@@ -160,11 +160,14 @@ def benefactor_pay(request, benefactor_name, project_id):
 @csrf_exempt
 def project_accept(request, benefactor_name, project_id):
     if request.method == 'POST':
-        p = json.loads(request)
+        p = json.loads(request.body)
+        print(p)
         reason = p['reason']
 
         benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
-        project = NonFinancialProject.objects.get(id=project_id)
+        print(NonFinancialProject.objects.all().values())
+        project = NonFinancialProject.objects.get(pk=project_id)
+        print(project.benefactor)
         if project.benefactor is None:
             project.benefactor = benefactor
             project.save()

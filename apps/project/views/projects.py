@@ -36,6 +36,7 @@ def add_financial_project(request, org_name):
         financial_project_form = FinancialProjectForm(p)
         if financial_project_form.is_valid():
             financial_project = financial_project_form.save(commit=False)
+            financial_project.status = 'in_progress'
             financial_project.organization = organization_profile
             financial_project.save()
             Log(message='Financial project with id {} added by {}'.format(financial_project.id, org_name)).save()
