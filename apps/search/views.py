@@ -22,8 +22,9 @@ def organization_search(request):
                 benefactors = benefactors.filter(gender=org_search_form.cleaned_data['gender'])
             if org_search_form.cleaned_data['benefactor_username'] is not None and org_search_form.cleaned_data['benefactor_username'] != '':
                 benefactors = benefactors.filter(profile__user__username=org_search_form.cleaned_data['benefactor_username'])
-            if org_search_form.cleaned_data['skills'] is not None and len(org_search_form.cleaned_data['skills']) != 0:
-                benefactors = filter_benefactors_by_skill(benefactors, org_search_form.cleaned_data['skills'])
+            skills = p['skills']
+            if skills is not None and len(skills) != 0:
+                benefactors = filter_benefactors_by_skill(benefactors, skills)
             data = []
             for ben in benefactors:
                 data.append(ben.as_json())
@@ -57,8 +58,9 @@ def benefactor_nonfinancial_search(request):
                 projects = projects.filter(organization__profile__user__username=benefactor_search_form.cleaned_data['org_username'])
             if benefactor_search_form.cleaned_data['project_name'] is not None and benefactor_search_form.cleaned_data['project_name'] != '':
                 projects = projects.filter(name=benefactor_search_form.cleaned_data['project_name'])
-            if benefactor_search_form.cleaned_data['skills'] is not None and len(benefactor_search_form.cleaned_data['skills']) != 0:
-                projects = filter_projects_by_skill(projects, benefactor_search_form.cleaned_data['skills'])
+            skills = p['skills']
+            if skills is not None and len(skills) != 0:
+                projects = filter_projects_by_skill(projects, skills)
 
             data = []
             for project in projects:
