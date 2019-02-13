@@ -157,7 +157,7 @@ def view_benefactor_feedback(request):
     if request.method == "GET":
         data = []
         try:
-            for feedback in Feedback.objects.get(feeder='benefactor'):
+            for feedback in Feedback.objects.filter(feeder='benefactor'):
                 data.append(feedback.as_json())
             return JsonResponse({'status': '0', 'list': data})
         except Feedback.DoesNotExist:
@@ -171,7 +171,7 @@ def view_organization_feedback(request):
     if request.method == "GET":
         data = []
         try:
-            for feedback in Feedback.objects.get(feeder='organization'):
+            for feedback in Feedback.objects.filter(feeder='benefactor'):
                 data.append(feedback.as_json())
             return JsonResponse({'status': '0', 'list': data})
         except Feedback.DoesNotExist:

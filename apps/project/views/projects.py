@@ -12,8 +12,8 @@ import json
 def end_project(request, project_id):
     if request.method == 'POST':
         try:
-            project = Project.objects.get(id=project_id)
-        except Project.DoesNotExist:
+            project = NonFinancialProject.objects.get(id=project_id)
+        except NonFinancialProject.DoesNotExist:
             return JsonResponse({'status': '-1', 'message': 'project does not exist'})
         project.status = 'done'
         project.save()

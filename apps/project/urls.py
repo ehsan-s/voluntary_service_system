@@ -24,8 +24,8 @@ urlpatterns = [
     url(r'^benefactor/add_schedule/(?P<benefactor_name>.+)/$', views.add_schedule_benefactor, name='add_schedule_for_benefactor'),
     url(r'^benefactor/(?P<benefactor_name>.+)/$', views.benefactor_project, name='benefactor_project'),
 
-    url(r'^project/view_schedule/(?P<project_id>.+)/$', views.view_schedule_project, name='view_schedule_for_project'),
-    url(r'^project/add_schedule/(?P<project_id>.+)/$', views.add_schedule_project, name='add_schedule_for_project'),
-    url(r'^project/done/(?P<project_id>.+)/$', views.end_project, name='end_project')
+    url(r'^view_schedule/(?P<project_id>.+)/$', views.view_schedule_project, name='view_schedule_for_project'),
+    url(r'^add_schedule/(?P<project_id>.+)/$', views.add_schedule_project, name='add_schedule_for_project'),
+    url(r'^done/(?P<project_id>.+)/$', views.end_project, name='end_project')
 ]
 
