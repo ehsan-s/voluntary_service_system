@@ -13,6 +13,7 @@ def organization_search(request):
         p = json.loads(request.body)
         if p['gender'] is None or p['gender'] == '':
             p['gender'] = 'اهمیتی ندارد'
+        print('P: ', p)
         org_search_form = organizationNonFinancialForm(p)
         if org_search_form.is_valid():
             benefactors = BenefactorProfile.objects.all()
@@ -25,6 +26,7 @@ def organization_search(request):
             skills = p['skills']
             if skills is not None and len(skills) != 0:
                 benefactors = filter_benefactors_by_skill(benefactors, skills)
+            print(benefactors)
             data = []
             for ben in benefactors:
                 data.append(ben.as_json())

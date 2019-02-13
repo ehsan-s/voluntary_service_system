@@ -60,7 +60,7 @@ def org_participation_request(request, benefactor_name, project_id):
         benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
         project = NonFinancialProject.objects.get(id=project_id)
 
-        if project.need in benefactor.skills:
+        if project.need in benefactor.skills.all():
             project_schedule = project.schedule.all()
             benefactor_schedule = benefactor.schedule.all()
             flag = 0
