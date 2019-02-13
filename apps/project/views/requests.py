@@ -156,6 +156,9 @@ def benefactor_pay(request, benefactor_name, project_id):
 @csrf_exempt
 def project_accept(request, benefactor_name, project_id):
     if request.method == 'POST':
+        p = json.loads(request)
+        reason = p['reason']
+
         benefactor = BenefactorProfile.objects.get(profile__user__username=benefactor_name)
         project = NonFinancialProject.objects.get(id=project_id)
         if project.benefactor is None:
@@ -169,6 +172,7 @@ def project_accept(request, benefactor_name, project_id):
                 return JsonResponse({'status': '-1', 'message': 'request does not exist'})
             finally:
                 request.status = 'accepted'
+                request.answer_desc = reason
                 request.save()
                 organization = request.project.organization.profile.user.username
                 if request.requester == 'benefactor':
@@ -187,12 +191,16 @@ def project_accept(request, benefactor_name, project_id):
 @csrf_exempt
 def project_reject(request, benefactor_name, project_id):
     if request.method == 'POST':
+        p = json.loads(request)
+        reason = p['reason']
+
         try:
             request = Request.objects.get(benefactor__profile__user__username=benefactor_name, project__id=project_id)
         except Request.DoesNotExist:
             return JsonResponse({'status': '-1', 'message': 'request does not exist'})
         finally:
             request.status = 'rejected'
+            request.answer_desc = reason
             request.save()
             organization = request.project.organization.profile.user.username
             if request.requester == 'benefactor':
