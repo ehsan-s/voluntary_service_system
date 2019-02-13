@@ -9,9 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 def view_all_benefactors(request):
     if request.method == "GET":
         data = []
-        for benefactor in BenefactorProfile.objects.all():
-            data.append(benefactor.as_json())
-        return JsonResponse({'status': '0', 'list': data})
+        try:
+            for benefactor in BenefactorProfile.objects.all():
+                data.append(benefactor.as_json())
+            return JsonResponse({'status': '0', 'list': data})
+        except BenefactorProfile.DoesNotExist:
+            return JsonResponse({'status': '0', 'list': data})
 
     else:
         return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
@@ -138,9 +141,12 @@ def view_organization_nprojects(request, username):
 def view_skills(request):
     if request.method == "GET":
         data = []
-        for skill in BenefactorSkill.objects.all():
-            data.append(skill.as_json())
-        return JsonResponse({'status': '0', 'list': data})
+        try:
+            for skill in BenefactorSkill.objects.all():
+                data.append(skill.as_json())
+            return JsonResponse({'status': '0', 'list': data})
+        except BenefactorSkill.DoesNotExist:
+            return JsonResponse({'status': '0', 'list': data})
 
     else:
         return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
@@ -150,10 +156,12 @@ def view_skills(request):
 def view_benefactor_feedback(request):
     if request.method == "GET":
         data = []
-        for feedback in Feedback.objects.get(feeder='benefactor', status='A'):
-            data.append(feedback.as_json())
-        return JsonResponse({'status': '0', 'list': data})
-
+        try:
+            for feedback in Feedback.objects.get(feeder='benefactor'):
+                data.append(feedback.as_json())
+            return JsonResponse({'status': '0', 'list': data})
+        except Feedback.DoesNotExist:
+            return JsonResponse({'status': '0', 'list': data})
     else:
         return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})
 
@@ -162,9 +170,12 @@ def view_benefactor_feedback(request):
 def view_organization_feedback(request):
     if request.method == "GET":
         data = []
-        for feedback in Feedback.objects.get(feeder='organization', status='A'):
-            data.append(feedback.as_json())
-        return JsonResponse({'status': '0', 'list': data})
+        try:
+            for feedback in Feedback.objects.get(feeder='organization'):
+                data.append(feedback.as_json())
+            return JsonResponse({'status': '0', 'list': data})
+        except Feedback.DoesNotExist:
+            return JsonResponse({'status': '0', 'list': data})
 
     else:
         return JsonResponse({'status': '-1', 'message': {'category': ['Request is invalid']}})

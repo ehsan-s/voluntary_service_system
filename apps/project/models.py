@@ -77,7 +77,7 @@ class Feedback(models.Model):
     feedback = models.CharField(max_length=1000, null=True, blank=True, verbose_name=_('feedback'))
 
     def as_json(self):
-        return dict(id=self.id, project=self.project, rate=self.rate, feedback=self.feedback)
+        return dict(id=self.id, project=self.project.as_json(), rate=self.rate, feedback=self.feedback)
 
 
 class Request(models.Model):
