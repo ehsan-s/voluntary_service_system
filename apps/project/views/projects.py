@@ -9,6 +9,24 @@ import json
 
 
 @csrf_exempt
+def end_project(request, project_id):
+    if request.method == 'POST':
+        try:
+            project = Project.objects.get(id=project_id)
+        except Project.DoesNotExist:
+            return JsonResponse({'status': '-1', 'message': 'project does not exist'})
+        project.status = 'done'
+        project.save()
+        benefactor_name = project.benefactor.profile.user.username
+        organization = project.organization.profile.user.username
+        Log(message='project with id {} of organization is done by benefactor {}'.format(benefactor_name, project_id,
+                                                                                      organization)).save()
+        return JsonResponse({'status': '0', 'message': 'project is done.'})
+    else:
+        return JsonResponse({'status': '-1', 'message': 'request is not valid.'})
+
+
+@csrf_exempt
 def add_financial_project(request, org_name):
     if request.method == 'POST':
         p = json.loads(request.body)
