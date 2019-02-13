@@ -25,16 +25,16 @@ class Schedule(models.Model):
     )
     day = models.IntegerField(choices=DAY_CHOICES, verbose_name=_('days in week'))
 
-    start_time = models.IntegerField(validators=[validate_time], verbose_name=_('times in day'))
+    time = models.IntegerField(validators=[validate_time], verbose_name=_('times in day'))
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return self.day == other.day and self.start_time == other.start_time
+            return self.day == other.day and self.time == other.time
         else:
             return False
 
     def as_json(self):
-        return dict(day=self.day, time=self.start_time)
+        return dict(day=self.day, time=self.time)
 
 
 class SkillCategory(models.Model):
@@ -113,6 +113,7 @@ class BenefactorProfile(models.Model):
         schedule_list = []
         for schedule in self.schedule.all():
             schedule_list.append(schedule.as_json())
+        return schedule_list
 
     def as_json(self):
         return dict(username=self.profile.user.username,
